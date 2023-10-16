@@ -1,4 +1,5 @@
 import 'package:biscuitt_ai/history_page.dart';
+import 'package:biscuitt_ai/file_upload.dart';
 import 'package:biscuitt_ai/quiz_page.dart';
 import 'package:biscuitt_ai/ranking_page.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,9 @@ class _MainAppContainerState extends State<MainAppContainer> {
             label: "Quiz"),
         NavigationDestination(icon: Icon(Icons.stars), label: "Ranking"),
         NavigationDestination(
+            icon: Icon(Icons.drive_folder_upload_outlined),
+            label: "Upload"),
+        NavigationDestination(
             icon: Icon(Icons.view_list),
             selectedIcon: Icon(Icons.view_list_outlined),
             label: "History"),
@@ -72,6 +76,7 @@ class _MainAppContainerState extends State<MainAppContainer> {
       body: <Widget>[
         QuizPage(),
         RankingPage(),
+        UploadPage(),
         HistoryPage(),
       ][currentPageIndex],
     );
