@@ -7,7 +7,7 @@ class Question {
 
 class Answer {
   final String text;
-  final bool isCorrect;
+  bool isCorrect;
 
-  const Answer({ required this.text, required this.isCorrect });
+  Answer({ required this.text, required this.isCorrect });
 }
