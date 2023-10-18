@@ -1,7 +1,13 @@
 class Question {
-  String prompt;
-  List<String> answers;
-  int correctIndex;
+  final String text;
+  final List<Answer> answers;
 
-  Question(this.prompt, this.answers, this.correctIndex);
+  const Question({ required this.text, required this.answers });
+}
+
+class Answer {
+  final String text;
+  final bool isCorrect;
+
+  const Answer({ required this.text, required this.isCorrect });
 }
