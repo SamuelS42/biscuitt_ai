@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class OpenAIService {
   final String baseURL = 'https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct-0914/completions';
-  final String apiKey = 'key';
+  final String apiKey = '***REMOVED***';
 
   Future<String> fetchResponse(String prompt, {int maxTokens = 150, double temperature = 0.7, int topP = 1, int frequencyPenalty = 0, int presencePenalty = 0}) async {
     var headers = {
