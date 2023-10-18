@@ -3,13 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+  const QuizScreen({ super.key });
 
   @override
-  State<QuizScreen> createState() => _QuizScreen();
+  State<QuizScreen> createState() => _QuizScreenState();
 }
 
-class _QuizScreen extends State<QuizScreen> {
+class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     return const Padding(
@@ -53,33 +53,44 @@ class AnswerList extends StatelessWidget {
   }
 }
 
-class AnswerItem extends StatelessWidget {
-  AnswerItem({
-    required this.answer,
-  }) : super(key: ObjectKey(answer));
+class AnswerItem extends StatefulWidget {
+  const AnswerItem({ required this.answer, super.key });
 
   final Answer answer;
+
+  @override
+  State<AnswerItem> createState() => _AnswerItemState();
+}
+
+class _AnswerItemState extends State<AnswerItem> {
+  bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
         onPressed: () {
+          setState(() {
+            _pressed = true;
+          });
+
           if (kDebugMode) {
-            print("ElevatedButton pressed, text: ${answer
-                .text}, isCorrect: ${answer.isCorrect}");
+            print("ElevatedButton pressed, text: ${widget.answer.text}, isCorrect: ${widget.answer.isCorrect}");
           }
         },
         style: ElevatedButton.styleFrom(
+          backgroundColor: _pressed ? (widget.answer.isCorrect ? Colors.green[100] : Colors.red[100]) : Colors.purple[100],
           padding: const EdgeInsets.symmetric(vertical: 15),
           textStyle: const TextStyle(
               fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.bold
           ),
         ),
-        child: Text(answer.text),
+        child: Text(widget.answer.text),
     );
   }
 }
+
+
 
 class QuestionView extends StatefulWidget {
   const QuestionView({super.key});
