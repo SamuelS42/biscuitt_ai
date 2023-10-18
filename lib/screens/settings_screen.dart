@@ -4,10 +4,10 @@ class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreen();
+  State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreen extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen> {
   int number = 0;
 
   @override

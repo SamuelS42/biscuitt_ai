@@ -6,13 +6,13 @@ import 'package:flutter/services.dart';
 import 'package:biscuitt_ai/services/openai_service.dart';
 
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+  const QuizScreen({ super.key });
 
   @override
-  State<QuizScreen> createState() => _QuizScreen();
+  State<QuizScreen> createState() => _QuizScreenState();
 }
 
-class _QuizScreen extends State<QuizScreen> {
+class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
@@ -54,8 +54,14 @@ class _QuizScreen extends State<QuizScreen> {
       setState(() {
         _responseText = response;
         // print(_responseText);
-        _questions = parseQuestions(_responseText); // parse and store in a variable
-        print('Parsed Questions: ${_questions.length}');
+        _questions = parseQuestions(_responseText);
+        for (var i = 0; i < _questions.length; i++) {
+          print('Q$i');
+          for (var j = 0; j < _questions[i].answers.length; j++) {
+            print(_questions[i].answers[j].isCorrect);
+          }
+        }
+
       });
     } catch (e) {
       print(e.toString());
@@ -69,20 +75,22 @@ class _QuizScreen extends State<QuizScreen> {
     for (int i = 0; i < lines.length; i++) {
       if (lines[i].contains(RegExp(r'^\d+\:'))) {
         String questionText = lines[i].substring(lines[i].indexOf(':') + 1).trim();
-        List<Answer> answers = [];  // Using List<Answer> instead of List<String>
+        List<Answer> answers = [];
         int correctIndex = -1;
 
-        while (i + 1 < lines.length && lines[i + 1].contains(RegExp(r'^[a-d]\)'))) {
+        while (i + 1 < lines.length && (lines[i + 1].contains(RegExp(r'^[a-d]\)')) || lines[i + 1].startsWith("CORRECT: Option "))) {
           i++;
-          String answerText = lines[i].substring(3).trim();
 
-          if (i + 1 < lines.length && lines[i + 1].startsWith("CORRECT: Option")) {
-            correctIndex = "abcd".indexOf(lines[i + 1][15]);
-            i++;
+          if (lines[i].startsWith("CORRECT: Option ")) {
+            correctIndex = "abcd".indexOf(lines[i][16]);
+          } else {
+            String answerText = lines[i].substring(3).trim();
+            answers.add(Answer(text: answerText, isCorrect: false));  // Temporarily set isCorrect to false
           }
+        }
 
-          // Create the Answer object and mark it as correct if it's the correct answer
-          answers.add(Answer(text: answerText, isCorrect: answers.length == correctIndex));
+        if (correctIndex != -1 && correctIndex < answers.length) {
+          answers[correctIndex].isCorrect = true;  // Set the correct answer after parsing all options
         }
 
         questions.add(Question(text: questionText, answers: answers));
@@ -128,33 +136,44 @@ class AnswerList extends StatelessWidget {
   }
 }
 
-class AnswerItem extends StatelessWidget {
-  AnswerItem({
-    required this.answer,
-  }) : super(key: ObjectKey(answer));
+class AnswerItem extends StatefulWidget {
+  const AnswerItem({ required this.answer, super.key });
 
   final Answer answer;
 
   @override
+  State<AnswerItem> createState() => _AnswerItemState();
+}
+
+class _AnswerItemState extends State<AnswerItem> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        if (kDebugMode) {
-          print("ElevatedButton pressed, text: ${answer
-              .text}, isCorrect: ${answer.isCorrect}");
-        }
-      },
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        textStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+        onPressed: () {
+          setState(() {
+            _pressed = true;
+          });
+
+          if (kDebugMode) {
+            print("ElevatedButton pressed, text: ${widget.answer.text}, isCorrect: ${widget.answer.isCorrect}");
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _pressed ? (widget.answer.isCorrect ? Colors.green[100] : Colors.red[100]) : Colors.purple[100],
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          textStyle: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold
+          ),
         ),
-      ),
-      child: Text(answer.text),
+        child: Text(widget.answer.text),
     );
   }
 }
+
+
 
 class QuestionView extends StatefulWidget {
   final Question question;
