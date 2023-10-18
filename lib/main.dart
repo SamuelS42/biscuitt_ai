@@ -1,6 +1,6 @@
-import 'package:biscuitt_ai/screens/history_page.dart';
-import 'package:biscuitt_ai/screens/quiz_page.dart';
-import 'package:biscuitt_ai/screens/ranking_page.dart';
+import 'package:biscuitt_ai/screens/history_screen.dart';
+import 'package:biscuitt_ai/screens/quiz_screen.dart';
+import 'package:biscuitt_ai/screens/ranking_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -70,9 +70,9 @@ class _MainAppContainerState extends State<MainAppContainer> {
     return Scaffold(
       bottomNavigationBar: navBar,
       body: <Widget>[
-        QuizPage(),
-        RankingPage(),
-        HistoryPage(),
+        QuizScreen(),
+        RankingScreen(),
+        HistoryScreen(),
       ][currentPageIndex],
     );
   }
