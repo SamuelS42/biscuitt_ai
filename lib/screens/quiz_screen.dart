@@ -96,10 +96,10 @@ class QuestionView extends StatefulWidget {
   const QuestionView({super.key});
 
   @override
-  State<StatefulWidget> createState() => _QuestionView();
+  State<StatefulWidget> createState() => _QuestionViewState();
 }
 
-class _QuestionView extends State<QuestionView> {
+class _QuestionViewState extends State<QuestionView> {
   Question question = const Question(
     text: "What is the time complexity of adding a node to the end of a linked list with a tail reference?",
     answers: [
