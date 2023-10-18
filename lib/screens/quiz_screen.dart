@@ -4,28 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/score_model.dart';
 
-class QuizScreen extends StatefulWidget {
-  const QuizScreen({ super.key });
+class QuizScreen extends StatelessWidget {
+  const QuizScreen({super.key});
 
-  @override
-  State<QuizScreen> createState() => _QuizScreenState();
-}
-
-class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-        create: (context) => ScoreModel(),
-        child: const Padding(
-            padding: EdgeInsets.all(32.0),
-            child: QuestionView(),
+      create: (context) => ScoreModel(),
+      child: const Padding(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          children: [
+            ScoreText(),
+            SizedBox(height: 32),
+            QuestionView(),
+          ],
         ),
+      )
     );
   }
 }
 
 class ScoreText extends StatelessWidget {
-  const ScoreText({ super.key });
+  const ScoreText({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +39,16 @@ class ScoreText extends StatelessWidget {
 }
 
 class QuestionText extends StatelessWidget {
-  QuestionText({
-    required this.text,
-  }) : super(key: ObjectKey(text));
+  const QuestionText({super.key, required this.text});
 
   final String text;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-        text,
-        textAlign: TextAlign.left,
-        style: Theme.of(context).textTheme.headlineLarge,
+      text,
+      textAlign: TextAlign.left,
+      style: Theme.of(context).textTheme.headlineLarge,
     );
   }
 }
@@ -72,7 +71,7 @@ class AnswerList extends StatelessWidget {
 }
 
 class AnswerItem extends StatefulWidget {
-  const AnswerItem({ required this.answer, super.key });
+  const AnswerItem({required this.answer, super.key});
 
   final Answer answer;
 
@@ -105,16 +104,14 @@ class _AnswerItemState extends State<AnswerItem> {
           backgroundColor: _pressed ? (widget.answer.isCorrect ? Colors.green[100] : Colors.red[100]) : Colors.purple[100],
           padding: const EdgeInsets.symmetric(vertical: 15),
           textStyle: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold
+            fontSize: 20,
+            fontWeight: FontWeight.bold
           ),
         ),
         child: Text(widget.answer.text),
     );
   }
 }
-
-
 
 class QuestionView extends StatefulWidget {
   const QuestionView({super.key});
@@ -137,14 +134,12 @@ class _QuestionViewState extends State<QuestionView> {
   @override
   Widget build(BuildContext context) {
     return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const ScoreText(),
-          const SizedBox(height: 30),
-          QuestionText(text: question.text),
-          const SizedBox(height: 30),
-          AnswerList(answers: question.answers),
-        ],
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        QuestionText(text: question.text),
+        const SizedBox(height: 30),
+        AnswerList(answers: question.answers),
+      ],
     );
   }
 }

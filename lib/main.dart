@@ -70,13 +70,19 @@ class _MainAppContainerState extends State<MainAppContainer> {
       selectedIndex: currentPageIndex,
     );
 
-    return Scaffold(
-      bottomNavigationBar: navBar,
-      body: <Widget>[
-        QuizScreen(),
-        RankingScreen(),
-        HistoryScreen(),
-      ][currentPageIndex],
+    return MaterialApp(
+      title: "Biscuitt",
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Biscuitt"),
+        ),
+        bottomNavigationBar: navBar,
+        body: <Widget>[
+          const QuizScreen(),
+          const RankingScreen(),
+          const HistoryScreen(),
+        ][currentPageIndex],
+      ),
     );
   }
 }
