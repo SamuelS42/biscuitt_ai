@@ -1,6 +1,8 @@
 import 'package:biscuitt_ai/models/question_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../models/score_model.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({ super.key });
@@ -12,9 +14,25 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(32.0),
-      child: QuestionView(),
+    return ChangeNotifierProvider(
+        create: (context) => ScoreModel(),
+        child: const Padding(
+            padding: EdgeInsets.all(32.0),
+            child: QuestionView(),
+        ),
+    );
+  }
+}
+
+class ScoreText extends StatelessWidget {
+  const ScoreText({ super.key });
+
+  @override
+  Widget build(BuildContext context) {
+    var score = context.watch<ScoreModel>();
+    return Text(
+      "Score: ${score.getScore()}",
+      style: Theme.of(context).textTheme.headlineMedium,
     );
   }
 }
@@ -67,11 +85,17 @@ class _AnswerItemState extends State<AnswerItem> {
 
   @override
   Widget build(BuildContext context) {
+    var score = context.watch<ScoreModel>();
+
     return ElevatedButton(
         onPressed: () {
           setState(() {
             _pressed = true;
           });
+
+          if (widget.answer.isCorrect) {
+            score.addToScore(1);
+          }
 
           if (kDebugMode) {
             print("ElevatedButton pressed, text: ${widget.answer.text}, isCorrect: ${widget.answer.isCorrect}");
@@ -115,7 +139,10 @@ class _QuestionViewState extends State<QuestionView> {
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const ScoreText(),
+          const SizedBox(height: 30),
           QuestionText(text: question.text),
+          const SizedBox(height: 30),
           AnswerList(answers: question.answers),
         ],
     );
