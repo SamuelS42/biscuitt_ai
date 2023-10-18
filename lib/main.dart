@@ -1,6 +1,6 @@
-import 'package:biscuitt_ai/history_page.dart';
-import 'package:biscuitt_ai/quiz_page.dart';
-import 'package:biscuitt_ai/ranking_page.dart';
+import 'package:biscuitt_ai/screens/history_page.dart';
+import 'package:biscuitt_ai/screens/quiz_page.dart';
+import 'package:biscuitt_ai/screens/ranking_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
