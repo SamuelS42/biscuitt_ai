@@ -2,6 +2,9 @@ import 'package:biscuitt_ai/screens/history_screen.dart';
 import 'package:biscuitt_ai/screens/quiz_screen.dart';
 import 'package:biscuitt_ai/screens/ranking_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'models/score_model.dart';
 
 void main() {
   runApp(const BiscuittApp());
@@ -67,13 +70,19 @@ class _MainAppContainerState extends State<MainAppContainer> {
       selectedIndex: currentPageIndex,
     );
 
-    return Scaffold(
-      bottomNavigationBar: navBar,
-      body: <Widget>[
-        QuizScreen(),
-        RankingScreen(),
-        HistoryScreen(),
-      ][currentPageIndex],
+    return MaterialApp(
+      title: "Biscuitt",
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Biscuitt"),
+        ),
+        bottomNavigationBar: navBar,
+        body: <Widget>[
+          const QuizScreen(),
+          const RankingScreen(),
+          const HistoryScreen(),
+        ][currentPageIndex],
+      ),
     );
   }
 }
