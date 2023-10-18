@@ -40,27 +40,27 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _getResponse() async {
     try {
-      print('Starting _getResponse');
+      // print('Starting _getResponse');
       String transcript = await _loadTranscriptAsset();
-      print('Loaded transcript');
+      // print('Loaded transcript');
       String prompt = "Following is a lecture transcript. \n \n Given this transcript, generate 5 multiple-choice questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\na) Option 1a b)\nOption 1b\nc) Option 1c\nd) Option 1d\nCORRECT: Option a\n\n Transcript: $transcript";
       String response = await _service.fetchResponse(
         prompt,
         maxTokens: 2000,
         temperature: 0.3,
       );
-      print('response fetched');
+      // print('response fetched');
 
       setState(() {
         _responseText = response;
         // print(_responseText);
         _questions = parseQuestions(_responseText);
-        for (var i = 0; i < _questions.length; i++) {
-          print('Q$i');
-          for (var j = 0; j < _questions[i].answers.length; j++) {
-            print(_questions[i].answers[j].isCorrect);
-          }
-        }
+        // for (var i = 0; i < _questions.length; i++) {
+        //   print('Q$i');
+        //   for (var j = 0; j < _questions[i].answers.length; j++) {
+        //     print(_questions[i].answers[j].isCorrect);
+        //   }
+        // }
 
       });
     } catch (e) {
