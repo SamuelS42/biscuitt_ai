@@ -105,20 +105,22 @@ class _QuizScreenState extends State<QuizScreen> {
     return ChangeNotifierProvider(
         create: (context) => ScoreModel(),
         child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const ScoreText(),
-              const SizedBox(height: 32),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: _questions.length,
-                itemBuilder: (context, index) =>
-                    QuestionView(question: _questions[index]),
+            padding: const EdgeInsets.all(24),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const ScoreText(),
+                  const SizedBox(height: 32),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _questions.length,
+                    itemBuilder: (context, index) =>
+                        QuestionView(question: _questions[index]),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ));
+            )));
   }
 }
 
