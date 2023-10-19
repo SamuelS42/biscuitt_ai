@@ -111,7 +111,8 @@ class _QuizScreenState extends State<QuizScreen> {
                 children: [
                   const ScoreText(),
                   const SizedBox(height: 32),
-                  ListView.builder(
+                  ListView.separated(
+                    separatorBuilder: (ctx, i) => const SizedBox(height: 20),
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: _questions.length,
@@ -147,7 +148,7 @@ class QuestionText extends StatelessWidget {
     return Text(
       text,
       textAlign: TextAlign.left,
-      style: Theme.of(context).textTheme.headlineLarge,
+      style: Theme.of(context).textTheme.headlineSmall,
     );
   }
 }
@@ -203,9 +204,7 @@ class _AnswerItemState extends State<AnswerItem> {
       style: ElevatedButton.styleFrom(
         backgroundColor: _pressed
             ? (widget.answer.isCorrect ? Colors.green[100] : Colors.red[100])
-            : Colors.purple[100],
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            : Colors.purple[50],
       ),
       child: Text(widget.answer.text),
     );
@@ -227,7 +226,7 @@ class _QuestionView extends State<QuestionView> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         QuestionText(text: widget.question.text),
-        const SizedBox(height: 30),
+        const SizedBox(height: 20),
         AnswerList(answers: widget.question.answers),
       ],
     );
