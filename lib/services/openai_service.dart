@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 class OpenAIService {
   final String baseURL =
       'https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct-0914/completions';
-  final String? apiKey = dotenv.env['OPEN_AI_API_KEY'];
+  final String? apiKey = dotenv.env['OPENAI_API_KEY'];
 
   Future<String> fetchResponse(String prompt,
       {int maxTokens = 150,
