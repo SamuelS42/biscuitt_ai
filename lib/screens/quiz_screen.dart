@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:biscuitt_ai/models/question_model.dart';
+import 'package:biscuitt_ai/services/openai_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:biscuitt_ai/services/openai_service.dart';
 import 'package:provider/provider.dart';
+
 import '../models/score_model.dart';
 
 class QuizScreen extends StatefulWidget {
