@@ -43,4 +43,5 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-lib/services/openai_service.dart
+# Environmental variables file
+*.env
