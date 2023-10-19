@@ -40,6 +40,9 @@ dependencies:
   file_picker: ^4.0.0
   audioplayers: ^5.2.0
 
+  # The following adds Picovoice's Leopard Speech-to-Text Engine.
+  leopard_flutter: ^1.2.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
