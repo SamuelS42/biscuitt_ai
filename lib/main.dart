@@ -1,6 +1,5 @@
+import 'package:biscuitt_ai/screens/file_upload_screen.dart';
 import 'package:biscuitt_ai/screens/history_screen.dart';
-import 'package:biscuitt_ai/screens/quiz_screen.dart';
-import 'package:biscuitt_ai/screens/ranking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -18,10 +17,10 @@ class BiscuittApp extends StatelessWidget {
     return MaterialApp(
       title: 'Biscuitt',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MainAppContainer(title: 'Biscuitt: (TODO make good tagline)'),
+      home: const MainAppContainer(title: 'Biscuitt'),
     );
   }
 }
@@ -55,7 +54,6 @@ class _MainAppContainerState extends State<MainAppContainer> {
             icon: Icon(Icons.create_outlined),
             selectedIcon: Icon(Icons.create),
             label: "Quiz"),
-        NavigationDestination(icon: Icon(Icons.stars), label: "Ranking"),
         NavigationDestination(
             icon: Icon(Icons.view_list),
             selectedIcon: Icon(Icons.view_list_outlined),
@@ -69,19 +67,15 @@ class _MainAppContainerState extends State<MainAppContainer> {
       selectedIndex: currentPageIndex,
     );
 
-    return MaterialApp(
-      title: "Biscuitt",
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text("Biscuitt"),
-        ),
-        bottomNavigationBar: navBar,
-        body: <Widget>[
-          const QuizScreen(),
-          const RankingScreen(),
-          const HistoryScreen(),
-        ][currentPageIndex],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Biscuitt'),
       ),
+      bottomNavigationBar: navBar,
+      body: <Widget>[
+        const UploadScreen(),
+        const HistoryScreen(),
+      ][currentPageIndex],
     );
   }
 }

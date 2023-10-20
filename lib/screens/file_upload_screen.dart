@@ -1,14 +1,14 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
-class UploadPage extends StatefulWidget {
-  const UploadPage({super.key});
+class UploadScreen extends StatefulWidget {
+  const UploadScreen({super.key});
 
   @override
-  State<UploadPage> createState() => _UploadPageState();
+  State<UploadScreen> createState() => _UploadScreenState();
 }
 
-class _UploadPageState extends State<UploadPage> {
+class _UploadScreenState extends State<UploadScreen> {
   String? _filePath;
 
   Future<void> _pickAndUploadFile() async {
@@ -21,6 +21,7 @@ class _UploadPageState extends State<UploadPage> {
       setState(() {
         _filePath = result.files.single.path;
       });
+      debugPrint('Selected File: $_filePath');
     } else {
       setState(() {
         _filePath = null;
@@ -33,15 +34,30 @@ class _UploadPageState extends State<UploadPage> {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          ElevatedButton(
-            onPressed: () {
-              _pickAndUploadFile();
-            },
-            child: const Text('Upload File'),
-          ),
-          const SizedBox(height: 16), // Add some spacing
-          if (_filePath != null) Text('Selected File: $_filePath'),
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(children: [
+              Text(
+                'Welcome to Biscuitt, the AI study tool!',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Upload your lecture transcript or notes to start generating unlimited practice questions.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  _pickAndUploadFile();
+                },
+                child: const Text('Upload'),
+              ),
+            ]),
+          )
         ],
       ),
     );
