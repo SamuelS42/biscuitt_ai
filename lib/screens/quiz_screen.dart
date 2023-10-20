@@ -17,20 +17,33 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
+  int _questionIndex = 0;
+
+  void incrementQuestionIndex() {
+    setState(() {
+      _questionIndex = (_questionIndex + 1) % 5;
+      if (_questionIndex == 0) {
+        // Ran out of questions and need to generate more
+        _questions = [];
+        generateQuestions();
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
-    String uploadedFilePath = '';
+    generateQuestions();
+  }
 
-    if (_responseText.isEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        uploadedFilePath = context.read<FileModel>().uploadedFilePath;
-        _loadTranscriptAsset(uploadedFilePath).then((text) {
-          _getResponse(text);
-        });
+  void generateQuestions() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      String uploadedFilePath = context.read<FileModel>().uploadedFilePath;
+      _loadTranscriptAsset(uploadedFilePath).then((text) {
+        _getResponse(text);
       });
-    }
+    });
   }
 
   final OpenAIService _service = OpenAIService();
@@ -125,31 +138,39 @@ class _QuizScreenState extends State<QuizScreen> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  const ScoreText(),
+                  const ScoreChips(),
                   const SizedBox(height: 32),
-                  ListView.separated(
-                    separatorBuilder: (ctx, i) => const SizedBox(height: 20),
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _questions.length,
-                    itemBuilder: (context, index) =>
-                        QuestionView(question: _questions[index]),
-                  ),
+                  _questions.isNotEmpty
+                      ? QuestionView(
+                          question: _questions[_questionIndex],
+                          incrementQuestionIndex: incrementQuestionIndex)
+                      : const CircularProgressIndicator()
                 ],
               ),
             )));
   }
 }
 
-class ScoreText extends StatelessWidget {
-  const ScoreText({super.key});
+class ScoreChips extends StatelessWidget {
+  const ScoreChips({super.key});
 
   @override
   Widget build(BuildContext context) {
     var score = context.watch<ScoreModel>();
-    return Text(
-      "Score: ${score.score}",
-      style: Theme.of(context).textTheme.headlineMedium,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Chip(
+            avatar: const Icon(
+              Icons.check,
+              color: Colors.green,
+            ),
+            label: Text('${score.correctScore}')),
+        const SizedBox(width: 32),
+        Chip(
+            avatar: const Icon(Icons.close, color: Colors.red),
+            label: Text('${score.incorrectScore}'))
+      ],
     );
   }
 }
@@ -225,33 +246,63 @@ class _AnswerItemState extends State<AnswerItem> {
     var score = context.watch<ScoreModel>();
 
     return ElevatedButton(
+        onPressed: () {
+          setState(() {
+            _pressed = true;
+          });
+
+          widget.setAnswered(true);
+
+          if (widget.enabled) {
+            if (widget.answer.isCorrect) {
+              score.addToCorrectScore(1);
+            } else {
+              score.addToIncorrectScore(1);
+            }
+          }
+
+          debugPrint(
+              "ElevatedButton pressed, text: ${widget.answer.text}, isCorrect: ${widget.answer.isCorrect}");
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: !widget.enabled
+              ? (widget.answer.isCorrect ? Colors.green[50] : Colors.red[50])
+              : Theme.of(context).buttonTheme.colorScheme?.background,
+        ),
+        child: Text(widget.answer.text,
+            style: TextStyle(
+              color: widget.enabled
+                  ? Theme.of(context).buttonTheme.colorScheme?.primary
+                  : Colors.grey[800],
+            )));
+  }
+}
+
+class NextQuestionButton extends StatelessWidget {
+  const NextQuestionButton({super.key, required this.incrementQuestionIndex});
+
+  final VoidCallback incrementQuestionIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
       onPressed: () {
-        setState(() {
-          _pressed = true;
-        });
-
-        widget.setAnswered(true);
-
-        if (widget.enabled && widget.answer.isCorrect) {
-          score.addToScore(1);
-        }
-
-        debugPrint(
-            "ElevatedButton pressed, text: ${widget.answer.text}, isCorrect: ${widget.answer.isCorrect}");
+        incrementQuestionIndex();
       },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: !widget.enabled
-            ? (widget.answer.isCorrect ? Colors.green[100] : Colors.red[100])
-            : Theme.of(context).buttonTheme.colorScheme?.background,
-      ),
-      child: Text(widget.answer.text),
+      icon: const Icon(Icons.arrow_forward),
+      label: const Text('Next'),
     );
   }
 }
 
 class QuestionView extends StatefulWidget {
   final Question question;
-  const QuestionView({required this.question, super.key});
+  const QuestionView(
+      {super.key,
+      required this.question,
+      required this.incrementQuestionIndex});
+
+  final VoidCallback incrementQuestionIndex;
 
   @override
   State<StatefulWidget> createState() => _QuestionView();
@@ -266,6 +317,9 @@ class _QuestionView extends State<QuestionView> {
         QuestionText(text: widget.question.text),
         const SizedBox(height: 20),
         AnswerList(answers: widget.question.answers),
+        const SizedBox(height: 36),
+        NextQuestionButton(
+            incrementQuestionIndex: widget.incrementQuestionIndex),
       ],
     );
   }
