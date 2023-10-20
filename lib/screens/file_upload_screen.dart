@@ -2,7 +2,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class UploadScreen extends StatefulWidget {
-  const UploadScreen({super.key});
+  const UploadScreen({super.key, required this.setQuizMode});
+
+  final Function(bool) setQuizMode;
 
   @override
   State<UploadScreen> createState() => _UploadScreenState();
@@ -11,7 +13,7 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   String? _filePath;
 
-  Future<void> _pickAndUploadFile() async {
+  _pickAndUploadFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.any, // You can adjust the file type as needed
       allowMultiple: false,
@@ -21,7 +23,10 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _filePath = result.files.single.path;
       });
-      debugPrint('Selected File: $_filePath');
+
+      debugPrint('Selected file: $_filePath');
+
+      widget.setQuizMode(true);
     } else {
       setState(() {
         _filePath = null;
@@ -51,8 +56,8 @@ class _UploadScreenState extends State<UploadScreen> {
               ),
               const SizedBox(height: 32),
               ElevatedButton(
-                onPressed: () {
-                  _pickAndUploadFile();
+                onPressed: () async {
+                  await _pickAndUploadFile();
                 },
                 child: const Text('Upload'),
               ),
@@ -63,17 +68,3 @@ class _UploadScreenState extends State<UploadScreen> {
     );
   }
 }
-
-// class UploadPage extends StatefulWidget {
-//   const UploadPage({super.key});
-
-//   @override
-//   State<UploadPage> createState() => _UploadPage();
-// }
-
-// class _UploadPage extends State<UploadPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Placeholder();
-//   }
-//}

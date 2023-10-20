@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:biscuitt_ai/models/question_model.dart';
 import 'package:biscuitt_ai/services/openai_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -105,7 +104,7 @@ class _QuizScreenState extends State<QuizScreen> {
     return ChangeNotifierProvider(
         create: (context) => ScoreModel(),
         child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -196,15 +195,13 @@ class _AnswerItemState extends State<AnswerItem> {
           score.addToScore(1);
         }
 
-        if (kDebugMode) {
-          print(
-              "ElevatedButton pressed, text: ${widget.answer.text}, isCorrect: ${widget.answer.isCorrect}");
-        }
+        debugPrint(
+            "ElevatedButton pressed, text: ${widget.answer.text}, isCorrect: ${widget.answer.isCorrect}");
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: _pressed
             ? (widget.answer.isCorrect ? Colors.green[100] : Colors.red[100])
-            : Colors.purple[50],
+            : Theme.of(context).buttonTheme.colorScheme?.background,
       ),
       child: Text(widget.answer.text),
     );

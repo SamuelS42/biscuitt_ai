@@ -1,5 +1,6 @@
-import 'package:biscuitt_ai/screens/file_upload_screen.dart';
 import 'package:biscuitt_ai/screens/history_screen.dart';
+import 'package:biscuitt_ai/screens/practice_screen.dart';
+import 'package:biscuitt_ai/screens/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -53,7 +54,7 @@ class _MainAppContainerState extends State<MainAppContainer> {
         NavigationDestination(
             icon: Icon(Icons.create_outlined),
             selectedIcon: Icon(Icons.create),
-            label: "Quiz"),
+            label: "Practice"),
         NavigationDestination(
             icon: Icon(Icons.view_list),
             selectedIcon: Icon(Icons.view_list_outlined),
@@ -73,8 +74,9 @@ class _MainAppContainerState extends State<MainAppContainer> {
       ),
       bottomNavigationBar: navBar,
       body: <Widget>[
-        const UploadScreen(),
+        const PracticeScreen(),
         const HistoryScreen(),
+        const QuizScreen(),
       ][currentPageIndex],
     );
   }
