@@ -69,9 +69,7 @@ class _MainAppContainerState extends State<MainAppContainer> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Biscuitt'),
-      ),
+      appBar: AppBar(),
       bottomNavigationBar: navBar,
       body: <Widget>[
         const PracticeScreen(),
