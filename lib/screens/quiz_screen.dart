@@ -23,12 +23,14 @@ class _QuizScreenState extends State<QuizScreen> {
 
     String uploadedFilePath = '';
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      uploadedFilePath = context.read<FileModel>().uploadedFilePath;
-      _loadTranscriptAsset(uploadedFilePath).then((text) {
-        _getResponse(text);
+    if (_responseText.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        uploadedFilePath = context.read<FileModel>().uploadedFilePath;
+        _loadTranscriptAsset(uploadedFilePath).then((text) {
+          _getResponse(text);
+        });
       });
-    });
+    }
   }
 
   final OpenAIService _service = OpenAIService();
@@ -167,7 +169,7 @@ class QuestionText extends StatelessWidget {
   }
 }
 
-class AnswerList extends StatelessWidget {
+class AnswerList extends StatefulWidget {
   AnswerList({
     required this.answers,
   }) : super(key: ObjectKey(answers));
@@ -175,19 +177,41 @@ class AnswerList extends StatelessWidget {
   final List<Answer> answers;
 
   @override
+  State<AnswerList> createState() => _AnswerListState();
+}
+
+class _AnswerListState extends State<AnswerList> {
+  bool _isAnswered = false;
+
+  void setAnswered(bool isAnswered) {
+    setState(() {
+      _isAnswered = isAnswered;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListView.separated(
         separatorBuilder: (ctx, i) => const SizedBox(height: 10),
         shrinkWrap: true,
-        itemCount: answers.length,
-        itemBuilder: (ctx, i) => AnswerItem(answer: answers[i]));
+        itemCount: widget.answers.length,
+        itemBuilder: (ctx, i) => AnswerItem(
+            answer: widget.answers[i],
+            setAnswered: setAnswered,
+            enabled: !_isAnswered));
   }
 }
 
 class AnswerItem extends StatefulWidget {
-  const AnswerItem({required this.answer, super.key});
+  const AnswerItem(
+      {super.key,
+      required this.answer,
+      required this.setAnswered,
+      required this.enabled});
 
   final Answer answer;
+  final Function(bool) setAnswered;
+  final bool enabled;
 
   @override
   State<AnswerItem> createState() => _AnswerItemState();
@@ -206,7 +230,9 @@ class _AnswerItemState extends State<AnswerItem> {
           _pressed = true;
         });
 
-        if (widget.answer.isCorrect) {
+        widget.setAnswered(true);
+
+        if (widget.enabled && widget.answer.isCorrect) {
           score.addToScore(1);
         }
 
@@ -214,7 +240,7 @@ class _AnswerItemState extends State<AnswerItem> {
             "ElevatedButton pressed, text: ${widget.answer.text}, isCorrect: ${widget.answer.isCorrect}");
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: _pressed
+        backgroundColor: !widget.enabled
             ? (widget.answer.isCorrect ? Colors.green[100] : Colors.red[100])
             : Theme.of(context).buttonTheme.colorScheme?.background,
       ),
@@ -225,7 +251,7 @@ class _AnswerItemState extends State<AnswerItem> {
 
 class QuestionView extends StatefulWidget {
   final Question question;
-  const QuestionView({required this.question, Key? key}) : super(key: key);
+  const QuestionView({required this.question, super.key});
 
   @override
   State<StatefulWidget> createState() => _QuestionView();
