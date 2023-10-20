@@ -1,5 +1,7 @@
+import 'package:biscuitt_ai/models/file_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key, required this.setQuizMode});
@@ -13,7 +15,7 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   String? _filePath;
 
-  _pickAndUploadFile() async {
+  _pickAndUploadFile(FileModel fileModel) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.any, // You can adjust the file type as needed
       allowMultiple: false,
@@ -23,9 +25,8 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _filePath = result.files.single.path;
       });
-
       debugPrint('Selected file: $_filePath');
-
+      fileModel.uploadedFilePath = _filePath!;
       widget.setQuizMode(true);
     } else {
       setState(() {
@@ -36,6 +37,8 @@ class _UploadScreenState extends State<UploadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var fileModel = context.watch<FileModel>();
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -57,7 +60,7 @@ class _UploadScreenState extends State<UploadScreen> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () async {
-                  await _pickAndUploadFile();
+                  await _pickAndUploadFile(fileModel);
                 },
                 child: const Text('Upload'),
               ),

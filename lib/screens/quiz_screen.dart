@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:biscuitt_ai/models/file_model.dart';
 import 'package:biscuitt_ai/models/question_model.dart';
 import 'package:biscuitt_ai/services/openai_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../models/score_model.dart';
@@ -19,16 +20,31 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    _getResponse();
+
+    String uploadedFilePath = '';
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      uploadedFilePath = context.read<FileModel>().uploadedFilePath;
+      _loadTranscriptAsset(uploadedFilePath).then((text) {
+        _getResponse(text);
+      });
+    });
   }
 
   final OpenAIService _service = OpenAIService();
   String _responseText = '';
   List<Question> _questions = [];
 
-  Future<String> _loadTranscriptAsset() async {
-    return await rootBundle
-        .loadString('lib/transcripts/example_transcript.txt');
+  Future<String> _loadTranscriptAsset(String filePath) async {
+    try {
+      final file = File(filePath);
+
+      // Read the file
+      return await file.readAsString();
+    } catch (e) {
+      // If encountering an error, return 0
+      return '';
+    }
   }
 
   List<Question> parseQuestions(String responseText) {
@@ -69,10 +85,9 @@ class _QuizScreenState extends State<QuizScreen> {
     return questions;
   }
 
-  void _getResponse() async {
+  void _getResponse(String transcript) async {
     try {
       // print('Starting _getResponse');
-      String transcript = await _loadTranscriptAsset();
       // print('Loaded transcript');
       String prompt =
           "Following is a lecture transcript. \n \n Given this transcript, generate 5 multiple-choice questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\na) Option 1a b)\nOption 1b\nc) Option 1c\nd) Option 1d\nCORRECT: Option a\n\n Transcript: $transcript";
@@ -131,7 +146,7 @@ class ScoreText extends StatelessWidget {
   Widget build(BuildContext context) {
     var score = context.watch<ScoreModel>();
     return Text(
-      "Score: ${score.getScore()}",
+      "Score: ${score.score}",
       style: Theme.of(context).textTheme.headlineMedium,
     );
   }

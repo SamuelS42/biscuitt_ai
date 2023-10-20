@@ -8,7 +8,7 @@ class ScoreModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  int getScore() {
+  int get score {
     return _score;
   }
 }
