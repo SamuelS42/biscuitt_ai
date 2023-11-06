@@ -1,17 +1,77 @@
 import 'package:flutter/material.dart';
 
+enum QuestionType { MultipleChoice, TrueFalse }
+var SetQuestionType = 0;
+
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  const SettingsScreen({Key? key}) : super(key: key);
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  int number = 0;
+  QuestionType? selectedQuestionType = QuestionType.MultipleChoice;
+
+  void _showQuestionTypeDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Set Question Type'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              RadioListTile<QuestionType>(
+                title: const Text('Multiple Choice'),
+                value: QuestionType.MultipleChoice,
+                groupValue: selectedQuestionType,
+                onChanged: (QuestionType? value) {
+                  setState(() {
+                    selectedQuestionType = value;
+                  });
+                  SetQuestionType = 0;
+                  Navigator.pop(context); // Close the dialog after selection
+                },
+              ),
+              RadioListTile<QuestionType>(
+                title: const Text('True or False'),
+                value: QuestionType.TrueFalse,
+                groupValue: selectedQuestionType,
+                onChanged: (QuestionType? value) {
+                  setState(() {
+                    selectedQuestionType = value;
+                  });
+                  SetQuestionType = 1;
+                  Navigator.pop(context); // Close the dialog after selection
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Settings'),
+      ),
+      body: ListView(
+        children: <Widget>[
+          ListTile(
+            title: Text('Set Question Type'),
+            subtitle: Text(selectedQuestionType == QuestionType.MultipleChoice
+                ? 'Multiple Choice'
+                : 'True or False'),
+            onTap: () {
+              _showQuestionTypeDialog();
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
