@@ -6,6 +6,7 @@ import 'package:biscuitt_ai/models/question_model.dart';
 import 'package:biscuitt_ai/services/openai_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:biscuitt_ai/screens/settings_screen.dart';
 
 import '../models/score_model.dart';
 
@@ -65,54 +66,81 @@ class _QuizScreenState extends State<QuizScreen> {
   List<Question> parseQuestions(String responseText) {
     var lines = responseText.split("\n");
     List<Question> questions = [];
+    if (SetQuestionType == 0) {
+      for (int i = 0; i < lines.length; i++) {
+        if (lines[i].contains(RegExp(r'^\d+\:'))) {
+          String questionText =
+              lines[i].substring(lines[i].indexOf(':') + 1).trim();
+          List<Answer> answers = [];
+          int correctIndex = -1;
 
-    for (int i = 0; i < lines.length; i++) {
-      if (lines[i].contains(RegExp(r'^\d+\:'))) {
-        String questionText =
-            lines[i].substring(lines[i].indexOf(':') + 1).trim();
-        List<Answer> answers = [];
-        int correctIndex = -1;
+          while (i + 1 < lines.length &&
+              (lines[i + 1].contains(RegExp(r'^[a-d]\)')) ||
+                  lines[i + 1].startsWith("CORRECT: Option "))) {
+            i++;
 
-        while (i + 1 < lines.length &&
-            (lines[i + 1].contains(RegExp(r'^[a-d]\)')) ||
-                lines[i + 1].startsWith("CORRECT: Option "))) {
-          i++;
-
-          if (lines[i].startsWith("CORRECT: Option ")) {
-            correctIndex = "abcd".indexOf(lines[i][16]);
-          } else {
-            String answerText = lines[i].substring(3).trim();
-            answers.add(Answer(
-                text: answerText,
-                isCorrect: false)); // Temporarily set isCorrect to false
+            if (lines[i].startsWith("CORRECT: Option ")) {
+              correctIndex = "abcd".indexOf(lines[i][16]);
+            } else {
+              String answerText = lines[i].substring(3).trim();
+              answers.add(Answer(
+                  text: answerText,
+                  isCorrect: false)); // Temporarily set isCorrect to false
+            }
           }
-        }
 
-        if (correctIndex != -1 && correctIndex < answers.length) {
-          answers[correctIndex].isCorrect =
-              true; // Set the correct answer after parsing all options
-        }
+          if (correctIndex != -1 && correctIndex < answers.length) {
+            answers[correctIndex].isCorrect =
+                true; // Set the correct answer after parsing all options
+          }
 
-        questions.add(Question(text: questionText, answers: answers));
+          questions.add(Question(text: questionText, answers: answers));
+        }
       }
     }
+    if (SetQuestionType == 1) {
+      for (int i = 0; i < lines.length - 2; i++) {
+        if (lines[i].contains('?')) {
+          String q = lines[i];
+          String a = (lines[i + 3].split(':'))[1].trim();
+          List<Answer> answers = [];
+        
+          answers.add(Answer(
+          text: a,
+          isCorrect: true));
 
+          if (a == "True") {
+            answers.add(Answer(
+            text: "False",
+            isCorrect: false));
+          } else {
+            answers.add(Answer(
+            text: "True",
+            isCorrect: false));
+          }
+          questions.add(Question(text: q, answers: answers));
+          }
+      }
+    }
     return questions;
   }
 
   void _getResponse(String transcript) async {
     try {
-      // print('Starting _getResponse');
-      // print('Loaded transcript');
-      String prompt =
-          "Following is a lecture transcript. \n \n Given this transcript, generate 5 multiple-choice questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\na) Option 1a b)\nOption 1b\nc) Option 1c\nd) Option 1d\nCORRECT: Option a\n\n Transcript: $transcript";
+      String prompt = "-";
+      if (SetQuestionType == 0) {
+        prompt = "Following is a lecture transcript. \n \n Given this transcript, generate 5 multiple-choice questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\na) Option 1a b)\nOption 1b\nc) Option 1c\nd) Option 1d\nCORRECT: Option a\n\n Transcript: $transcript";
+      }
+      if (SetQuestionType == 1) {
+        prompt = "Following is a lecture transcript. \n \n Given this transcript, generate 5 True False questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\n True \n False \nCORRECT: answere\n\n Transcript: $transcript";
+      }
+          
       String response = await _service.fetchResponse(
         prompt,
         maxTokens: 2000,
         temperature: 0.3,
       );
       // print('response fetched');
-
       setState(() {
         _responseText = response;
         // print(_responseText);
