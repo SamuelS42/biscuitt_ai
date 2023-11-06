@@ -1,13 +1,66 @@
+import 'package:biscuitt_ai/screens/file_upload_screen.dart';
 import 'package:biscuitt_ai/screens/history_screen.dart';
-import 'package:biscuitt_ai/screens/practice_screen.dart';
 import 'package:biscuitt_ai/screens/quiz_screen.dart';
+import 'package:biscuitt_ai/widgets/scaffold_with_nested_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import 'models/file_model.dart';
 
 Future main() async {
   await dotenv.load(fileName: '.env');
   runApp(const BiscuittApp());
 }
+
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final _shellNavigatorPracticeKey =
+    GlobalKey<NavigatorState>(debugLabel: 'shellPractice');
+final _shellNavigatorHistoryKey =
+    GlobalKey<NavigatorState>(debugLabel: 'shellHistory');
+
+final _router =
+    GoRouter(initialLocation: '/', navigatorKey: _rootNavigatorKey, routes: [
+  StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        return ScaffoldWithNestedNavigation(navigationShell: navigationShell);
+      },
+      branches: [
+        StatefulShellBranch(
+          navigatorKey: _shellNavigatorPracticeKey,
+          routes: [
+            GoRoute(
+              path: '/',
+              pageBuilder: (context, state) => NoTransitionPage(
+                  child: ChangeNotifierProvider(
+                create: (context) => FileModel(),
+                child: const FileUploadScreen(),
+              )),
+              routes: [
+                GoRoute(
+                    path: 'quiz',
+                    builder: (context, state) => ChangeNotifierProvider(
+                          create: (context) => FileModel(),
+                          child: const QuizScreen(),
+                        )),
+              ],
+            )
+          ],
+        ),
+        StatefulShellBranch(
+          navigatorKey: _shellNavigatorHistoryKey,
+          routes: [
+            GoRoute(
+              path: '/history',
+              pageBuilder: (context, state) =>
+                  const NoTransitionPage(child: HistoryScreen()),
+              routes: [],
+            )
+          ],
+        )
+      ])
+]);
 
 class BiscuittApp extends StatelessWidget {
   const BiscuittApp({super.key});
@@ -15,67 +68,13 @@ class BiscuittApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Biscuitt',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MainAppContainer(title: 'Biscuitt'),
-    );
-  }
-}
-
-class MainAppContainer extends StatefulWidget {
-  const MainAppContainer({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MainAppContainer> createState() => _MainAppContainerState();
-}
-
-class _MainAppContainerState extends State<MainAppContainer> {
-  int currentPageIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    NavigationBar navBar = NavigationBar(
-      destinations: const <Widget>[
-        NavigationDestination(
-            icon: Icon(Icons.create_outlined),
-            selectedIcon: Icon(Icons.create),
-            label: "Practice"),
-        NavigationDestination(
-            icon: Icon(Icons.view_list),
-            selectedIcon: Icon(Icons.view_list_outlined),
-            label: "History"),
-      ],
-      onDestinationSelected: (int index) {
-        setState(() {
-          currentPageIndex = index;
-        });
-      },
-      selectedIndex: currentPageIndex,
-    );
-
-    return Scaffold(
-      appBar: AppBar(),
-      bottomNavigationBar: navBar,
-      body: <Widget>[
-        const PracticeScreen(),
-        const HistoryScreen(),
-        const QuizScreen(),
-      ][currentPageIndex],
+      routerConfig: _router,
     );
   }
 }
