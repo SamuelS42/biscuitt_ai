@@ -1,6 +1,6 @@
-import 'package:biscuitt_ai/screens/file_upload_screen.dart';
 import 'package:biscuitt_ai/screens/history_screen.dart';
 import 'package:biscuitt_ai/screens/quiz_screen.dart';
+import 'package:biscuitt_ai/screens/transcript_list_screen.dart';
 import 'package:biscuitt_ai/widgets/scaffold_with_nested_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -35,7 +35,7 @@ final _router =
               pageBuilder: (context, state) => NoTransitionPage(
                   child: ChangeNotifierProvider(
                 create: (context) => FileModel(),
-                child: const FileUploadScreen(),
+                child: const TranscriptListScreen(),
               )),
               routes: [
                 GoRoute(
@@ -55,7 +55,7 @@ final _router =
               path: '/history',
               pageBuilder: (context, state) =>
                   const NoTransitionPage(child: HistoryScreen()),
-              routes: [],
+              routes: const [],
             )
           ],
         )
