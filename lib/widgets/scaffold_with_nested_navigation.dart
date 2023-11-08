@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../models/score_model.dart';
+import '../models/transcript_model.dart';
 
 class ScaffoldWithNestedNavigation extends StatelessWidget {
   const ScaffoldWithNestedNavigation({
@@ -24,7 +28,13 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
         title: const Text('Biscuitt'),
         shadowColor: Theme.of(context).colorScheme.shadow,
       ),
-      body: navigationShell,
+      body: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => TranscriptModel()),
+          ChangeNotifierProvider(create: (context) => ScoreModel()),
+        ],
+        child: navigationShell,
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
         destinations: const [

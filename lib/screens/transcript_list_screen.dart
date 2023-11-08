@@ -1,23 +1,43 @@
-import 'package:biscuitt_ai/models/transcript_model.dart';
+import 'dart:io';
+
+import 'package:biscuitt_ai/models/transcript.dart';
+import 'package:biscuitt_ai/services/file_picker_service.dart';
 import 'package:biscuitt_ai/services/transcript_service.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:uuid/uuid.dart';
+
+import '../models/transcript_model.dart';
 
 class TranscriptListTile extends StatelessWidget {
-  final TranscriptListItem transcript;
+  final TranscriptListItem transcriptListItem;
 
-  const TranscriptListTile({super.key, required this.transcript});
+  const TranscriptListTile({super.key, required this.transcriptListItem});
 
   @override
   Widget build(BuildContext context) {
+    var transcriptModel = context.watch<TranscriptModel>();
+
     return Material(
         type: MaterialType.transparency,
         child: ListTile(
-          onTap: () => {
-            // TODO: Add code to open quiz for transcript
+          onTap: () {
+            TranscriptService transcriptService = TranscriptService();
+            transcriptService
+                .getTranscript(transcriptListItem.id)
+                .then((response) {
+              transcriptModel.transcript = Transcript(
+                  id: transcriptListItem.id,
+                  dateUploaded: transcriptListItem.dateUploaded,
+                  title: transcriptListItem.title,
+                  text: response.text);
+              context.go('/quiz');
+            });
           },
-          title: Text(transcript.title),
-          subtitle: Text(timeago.format(transcript.dateUploaded)),
+          title: Text(transcriptListItem.title),
+          subtitle: Text(timeago.format(transcriptListItem.dateUploaded)),
           trailing: const Icon(Icons.play_arrow),
         ));
   }
@@ -31,12 +51,14 @@ class TranscriptListScreen extends StatefulWidget {
 }
 
 class _TranscriptListScreenState extends State<TranscriptListScreen> {
-  TranscriptService service = TranscriptService();
+  TranscriptService transcriptService = TranscriptService();
 
   @override
   Widget build(BuildContext context) {
+    var transcriptModel = context.watch<TranscriptModel>();
+
     return FutureBuilder<List<TranscriptListItem>>(
-        future: service.getTranscripts(),
+        future: transcriptService.getTranscripts(),
         builder: (context, AsyncSnapshot<List<TranscriptListItem>> snapshot) {
           if (snapshot.hasData &&
               snapshot.data != null &&
@@ -55,12 +77,39 @@ class _TranscriptListScreenState extends State<TranscriptListScreen> {
                               .primary
                               .withOpacity(0.01),
                       child: TranscriptListTile(
-                          transcript: snapshot.data![index]))),
+                          transcriptListItem: snapshot.data![index]))),
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: FloatingActionButton(
                   onPressed: () {
-                    // TODO: Add code to upload transcript
+                    FilePickerService filePickerService = FilePickerService();
+
+                    filePickerService.pickFile().then((filePath) {
+                      try {
+                        final file = File(filePath!);
+
+                        // Read the file
+                        file.readAsString().then((text) {
+                          var uuid = const Uuid();
+                          Transcript transcript = Transcript(
+                              id: uuid.v4(),
+                              dateUploaded: DateTime.timestamp(),
+                              title: file.uri.pathSegments.last,
+                              text: text);
+                          TranscriptService transcriptService =
+                              TranscriptService();
+                          transcriptService
+                              .addTranscript(transcript)
+                              .then((id) {
+                            transcriptModel.transcript = transcript;
+                            context.go('/quiz');
+                          });
+                        });
+                      } catch (e) {
+                        // If encountering an error, return 0
+                        return '';
+                      }
+                    });
                   },
                   child: const Icon(Icons.add),
                 ),
@@ -87,8 +136,36 @@ class _TranscriptListScreenState extends State<TranscriptListScreen> {
                       ),
                       const SizedBox(height: 32),
                       ElevatedButton(
-                        onPressed: () => {
-                          // TODO: Add code to upload transcript
+                        onPressed: () {
+                          FilePickerService filePickerService =
+                              FilePickerService();
+
+                          filePickerService.pickFile().then((filePath) {
+                            try {
+                              final file = File(filePath!);
+
+                              // Read the file
+                              file.readAsString().then((text) {
+                                var uuid = const Uuid();
+                                Transcript transcript = Transcript(
+                                    id: uuid.v4(),
+                                    dateUploaded: DateTime.timestamp(),
+                                    title: file.uri.pathSegments.last,
+                                    text: text);
+                                TranscriptService transcriptService =
+                                    TranscriptService();
+                                transcriptService
+                                    .addTranscript(transcript)
+                                    .then((id) {
+                                  transcriptModel.transcript = transcript;
+                                  context.go('/quiz');
+                                });
+                              });
+                            } catch (e) {
+                              // If encountering an error, return 0
+                              return '';
+                            }
+                          });
                         },
                         child: const Text('Upload'),
                       ),

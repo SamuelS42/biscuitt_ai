@@ -1,25 +1,16 @@
-class Transcript {
-  final String id;
-  final DateTime dateUploaded;
-  final String title;
-  final String text;
+import 'package:biscuitt_ai/models/transcript.dart';
+import 'package:flutter/foundation.dart';
 
-  Transcript(
-      {required this.id,
-      required this.dateUploaded,
-      required this.title,
-      required this.text});
-}
+class TranscriptModel extends ChangeNotifier {
+  Transcript _transcript = Transcript(
+      id: '', dateUploaded: DateTime.timestamp(), title: '', text: '');
 
-class TranscriptListItem {
-  final String id;
-  final DateTime dateUploaded;
-  final String title;
-  final String blurb;
+  set transcript(Transcript transcript) {
+    _transcript = transcript;
+    notifyListeners();
+  }
 
-  TranscriptListItem(
-      {required this.id,
-      required this.dateUploaded,
-      required this.title,
-      required this.blurb});
+  Transcript get transcript {
+    return _transcript;
+  }
 }

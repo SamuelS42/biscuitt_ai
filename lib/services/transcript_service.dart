@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-import '../models/transcript_model.dart';
+import '../models/transcript.dart';
 
 class TranscriptService {
   // TODO: Remove this variable after actual implementations added
@@ -57,5 +57,9 @@ class TranscriptService {
     } else {
       throw Exception("Transcript does not exist.");
     }
+  }
+
+  Future<String> addTranscript(Transcript transcript) async {
+    return "71be9b7b-16ad-49b4-b86e-87f41a88b4f9";
   }
 }
