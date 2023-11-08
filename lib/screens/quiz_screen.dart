@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:biscuitt_ai/models/file_model.dart';
-import 'package:biscuitt_ai/models/question_model.dart';
+import 'package:biscuitt_ai/models/question.dart';
 import 'package:biscuitt_ai/services/openai_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:biscuitt_ai/screens/settings_screen.dart';
 
 import '../models/score_model.dart';
+import '../models/transcript.dart';
+import '../models/transcript_model.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -34,16 +35,14 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-
     generateQuestions();
   }
 
   void generateQuestions() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      String uploadedFilePath = context.read<FileModel>().uploadedFilePath;
-      _loadTranscriptAsset(uploadedFilePath).then((text) {
-        _getResponse(text);
-      });
+      Transcript transcript =
+          Provider.of<TranscriptModel>(context, listen: false).transcript;
+      _getResponse(transcript.text);
     });
   }
 
@@ -159,23 +158,21 @@ class _QuizScreenState extends State<QuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (context) => ScoreModel(),
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const ScoreChips(),
-                  const SizedBox(height: 32),
-                  _questions.isNotEmpty
-                      ? QuestionView(
-                          question: _questions[_questionIndex],
-                          incrementQuestionIndex: incrementQuestionIndex)
-                      : const CircularProgressIndicator()
-                ],
-              ),
-            )));
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              const ScoreChips(),
+              const SizedBox(height: 32),
+              _questions.isNotEmpty
+                  ? QuestionView(
+                      question: _questions[_questionIndex],
+                      incrementQuestionIndex: incrementQuestionIndex)
+                  : const CircularProgressIndicator()
+            ],
+          ),
+        ));
   }
 }
 
