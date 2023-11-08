@@ -1,6 +1,5 @@
-import 'package:biscuitt_ai/screens/history_screen.dart';
-import 'package:biscuitt_ai/screens/settings_screen.dart';
 import 'package:biscuitt_ai/screens/quiz_screen.dart';
+import 'package:biscuitt_ai/screens/settings_screen.dart';
 import 'package:biscuitt_ai/screens/transcript_list_screen.dart';
 import 'package:biscuitt_ai/widgets/scaffold_with_nested_navigation.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +14,6 @@ Future main() async {
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorPracticeKey =
     GlobalKey<NavigatorState>(debugLabel: 'shellPractice');
-final _shellNavigatorHistoryKey =
-    GlobalKey<NavigatorState>(debugLabel: 'shellHistory');
 final _shellNavigatorSettingsKey =
     GlobalKey<NavigatorState>(debugLabel: 'shellSettings');
 
@@ -46,30 +43,17 @@ final _router =
           ],
         ),
         StatefulShellBranch(
-          navigatorKey: _shellNavigatorHistoryKey,
-          routes: [
-            GoRoute(
-              path: '/history',
-              pageBuilder: (context, state) =>
-                  const NoTransitionPage(child: HistoryScreen()),
-              routes: const [],
-            )
-          ],
-        ),
-        StatefulShellBranch(
           navigatorKey: _shellNavigatorSettingsKey,
           routes: [
             GoRoute(
               path: '/settings',
               pageBuilder: (context, state) =>
                   const NoTransitionPage(child: SettingsScreen()),
-              routes: [],
+              routes: const [],
             )
           ],
         )
-        
       ])
-      
 ]);
 
 class BiscuittApp extends StatelessWidget {

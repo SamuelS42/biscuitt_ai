@@ -1,9 +1,9 @@
+import 'package:biscuitt_ai/notifiers/score_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../models/score_model.dart';
-import '../models/transcript_model.dart';
+import '../notifiers/transcript_notifier.dart';
 
 class ScaffoldWithNestedNavigation extends StatelessWidget {
   const ScaffoldWithNestedNavigation({
@@ -30,8 +30,8 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
       ),
       body: MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => TranscriptModel()),
-          ChangeNotifierProvider(create: (context) => ScoreModel()),
+          ChangeNotifierProvider(create: (context) => TranscriptNotifier()),
+          ChangeNotifierProvider(create: (context) => ScoreNotifier()),
         ],
         child: navigationShell,
       ),
@@ -43,10 +43,6 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
               selectedIcon: Icon(Icons.create),
               label: "Practice"),
           NavigationDestination(
-              icon: Icon(Icons.view_list),
-              selectedIcon: Icon(Icons.view_list_outlined),
-              label: "History"),
-           NavigationDestination(
               icon: Icon(Icons.settings),
               selectedIcon: Icon(Icons.settings_outlined),
               label: "Settings"),

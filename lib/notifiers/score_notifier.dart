@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class ScoreModel extends ChangeNotifier {
+class ScoreNotifier extends ChangeNotifier {
   int _correctScore = 0;
   int _incorrectScore = 0;
 

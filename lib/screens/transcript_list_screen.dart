@@ -9,7 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:uuid/uuid.dart';
 
-import '../models/transcript_model.dart';
+import '../models/transcript_list_item.dart';
+import '../notifiers/transcript_notifier.dart';
 
 class TranscriptListTile extends StatelessWidget {
   final TranscriptListItem transcriptListItem;
@@ -18,7 +19,7 @@ class TranscriptListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var transcriptModel = context.watch<TranscriptModel>();
+    var transcriptModel = context.watch<TranscriptNotifier>();
 
     return Material(
         type: MaterialType.transparency,
@@ -55,7 +56,7 @@ class _TranscriptListScreenState extends State<TranscriptListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var transcriptModel = context.watch<TranscriptModel>();
+    var transcriptModel = context.watch<TranscriptNotifier>();
 
     return FutureBuilder<List<TranscriptListItem>>(
         future: transcriptService.getTranscripts(),

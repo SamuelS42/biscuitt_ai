@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:biscuitt_ai/models/question.dart';
+import 'package:biscuitt_ai/screens/settings_screen.dart';
 import 'package:biscuitt_ai/services/openai_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biscuitt_ai/screens/settings_screen.dart';
 
-import '../models/score_model.dart';
+import '../models/answer.dart';
 import '../models/transcript.dart';
-import '../models/transcript_model.dart';
+import '../notifiers/score_notifier.dart';
+import '../notifiers/transcript_notifier.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -41,7 +42,7 @@ class _QuizScreenState extends State<QuizScreen> {
   void generateQuestions() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Transcript transcript =
-          Provider.of<TranscriptModel>(context, listen: false).transcript;
+          Provider.of<TranscriptNotifier>(context, listen: false).transcript;
       _getResponse(transcript.text);
     });
   }
@@ -103,22 +104,16 @@ class _QuizScreenState extends State<QuizScreen> {
           String q = lines[i];
           String a = (lines[i + 3].split(':'))[1].trim();
           List<Answer> answers = [];
-        
-          answers.add(Answer(
-          text: a,
-          isCorrect: true));
+
+          answers.add(Answer(text: a, isCorrect: true));
 
           if (a == "True") {
-            answers.add(Answer(
-            text: "False",
-            isCorrect: false));
+            answers.add(Answer(text: "False", isCorrect: false));
           } else {
-            answers.add(Answer(
-            text: "True",
-            isCorrect: false));
+            answers.add(Answer(text: "True", isCorrect: false));
           }
           questions.add(Question(text: q, answers: answers));
-          }
+        }
       }
     }
     return questions;
@@ -128,12 +123,14 @@ class _QuizScreenState extends State<QuizScreen> {
     try {
       String prompt = "-";
       if (SetQuestionType == 0) {
-        prompt = "Following is a lecture transcript. \n \n Given this transcript, generate 5 multiple-choice questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\na) Option 1a b)\nOption 1b\nc) Option 1c\nd) Option 1d\nCORRECT: Option a\n\n Transcript: $transcript";
+        prompt =
+            "Following is a lecture transcript. \n \n Given this transcript, generate 5 multiple-choice questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\na) Option 1a b)\nOption 1b\nc) Option 1c\nd) Option 1d\nCORRECT: Option a\n\n Transcript: $transcript";
       }
       if (SetQuestionType == 1) {
-        prompt = "Following is a lecture transcript. \n \n Given this transcript, generate 5 True False questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\n True \n False \nCORRECT: answere\n\n Transcript: $transcript";
+        prompt =
+            "Following is a lecture transcript. \n \n Given this transcript, generate 5 True False questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\n True \n False \nCORRECT: answere\n\n Transcript: $transcript";
       }
-          
+
       String response = await _service.fetchResponse(
         prompt,
         maxTokens: 2000,
@@ -181,7 +178,7 @@ class ScoreChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var score = context.watch<ScoreModel>();
+    var score = context.watch<ScoreNotifier>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -268,7 +265,7 @@ class _AnswerItemState extends State<AnswerItem> {
 
   @override
   Widget build(BuildContext context) {
-    var score = context.watch<ScoreModel>();
+    var score = context.watch<ScoreNotifier>();
 
     return ElevatedButton(
         onPressed: () {

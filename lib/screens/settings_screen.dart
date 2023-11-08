@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 enum QuestionType { MultipleChoice, TrueFalse }
+
 var SetQuestionType = 0;
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -18,7 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Set Question Type'),
+          title: const Text('Set Question Type'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -55,23 +56,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings'),
-      ),
-      body: ListView(
-        children: <Widget>[
-          ListTile(
-            title: Text('Set Question Type'),
-            subtitle: Text(selectedQuestionType == QuestionType.MultipleChoice
-                ? 'Multiple Choice'
-                : 'True or False'),
-            onTap: () {
-              _showQuestionTypeDialog();
-            },
-          ),
-        ],
-      ),
+    return ListView(
+      children: <Widget>[
+        ListTile(
+          title: const Text('Set Question Type'),
+          subtitle: Text(selectedQuestionType == QuestionType.MultipleChoice
+              ? 'Multiple Choice'
+              : 'True or False'),
+          onTap: () {
+            _showQuestionTypeDialog();
+          },
+        ),
+      ],
     );
   }
 }
