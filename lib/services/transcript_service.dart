@@ -2,11 +2,13 @@ import 'package:flutter/services.dart';
 
 import '../models/transcript_model.dart';
 
-class ApiService {
-  final bool returnEmpty = true;
+class TranscriptService {
+  // TODO: Remove this variable after actual implementations added
+  // Set this variable to
+  final bool returnsEmpty = false;
 
   Future<List<TranscriptListItem>> getTranscripts() async {
-    return returnEmpty
+    return returnsEmpty
         ? []
         : [
             TranscriptListItem(

@@ -1,5 +1,5 @@
 import 'package:biscuitt_ai/models/transcript_model.dart';
-import 'package:biscuitt_ai/services/api_service.dart';
+import 'package:biscuitt_ai/services/transcript_service.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -31,7 +31,7 @@ class TranscriptListScreen extends StatefulWidget {
 }
 
 class _TranscriptListScreenState extends State<TranscriptListScreen> {
-  ApiService service = ApiService();
+  TranscriptService service = TranscriptService();
 
   @override
   Widget build(BuildContext context) {
