@@ -1,14 +1,11 @@
-import 'package:biscuitt_ai/screens/file_upload_screen.dart';
 import 'package:biscuitt_ai/screens/history_screen.dart';
 import 'package:biscuitt_ai/screens/settings_screen.dart';
 import 'package:biscuitt_ai/screens/quiz_screen.dart';
+import 'package:biscuitt_ai/screens/transcript_list_screen.dart';
 import 'package:biscuitt_ai/widgets/scaffold_with_nested_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-
-import 'models/file_model.dart';
 
 Future main() async {
   await dotenv.load(fileName: '.env');
@@ -35,17 +32,14 @@ final _router =
           routes: [
             GoRoute(
               path: '/',
-              pageBuilder: (context, state) => NoTransitionPage(
-                  child: ChangeNotifierProvider(
-                create: (context) => FileModel(),
-                child: const FileUploadScreen(),
-              )),
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: TranscriptListScreen(),
+              ),
               routes: [
                 GoRoute(
                     path: 'quiz',
-                    builder: (context, state) => ChangeNotifierProvider(
-                          create: (context) => FileModel(),
-                          child: const QuizScreen(),
+                    pageBuilder: (context, state) => const NoTransitionPage(
+                          child: QuizScreen(),
                         )),
               ],
             )
@@ -58,7 +52,7 @@ final _router =
               path: '/history',
               pageBuilder: (context, state) =>
                   const NoTransitionPage(child: HistoryScreen()),
-              routes: [],
+              routes: const [],
             )
           ],
         ),
