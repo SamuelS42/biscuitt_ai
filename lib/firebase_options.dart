@@ -67,6 +67,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '138914182592',
     projectId: 'biscuitt-21b7d',
     storageBucket: 'biscuitt-21b7d.appspot.com',
+    iosClientId: '138914182592-c3uvak6db3djlcp8pic5afov1u2crlkf.apps.googleusercontent.com',
     iosBundleId: 'com.example.biscuittAi',
   );
 
@@ -76,6 +77,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '138914182592',
     projectId: 'biscuitt-21b7d',
     storageBucket: 'biscuitt-21b7d.appspot.com',
+    iosClientId: '138914182592-orcbda08aa4c5lao9sjo7fcd5ca2hccb.apps.googleusercontent.com',
     iosBundleId: 'com.example.biscuittAi.RunnerTests',
   );
 }
