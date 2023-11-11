@@ -33,7 +33,7 @@ class TranscriptListTile extends StatelessWidget {
                   dateUploaded: transcriptListItem.dateUploaded,
                   title: transcriptListItem.title,
                   text: response.text);
-              context.go('/quiz');
+              context.go('/settings');
             });
           },
           title: Text(transcriptListItem.title),
