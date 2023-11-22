@@ -8,6 +8,8 @@
  */
 
 const express = require("express");
+const BodyParser = require("body-parser");
+const {celebrate, Joi, errors, Segments} = require("celebrate");
 
 // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
 const {logger} = require("firebase-functions");
@@ -27,48 +29,67 @@ const USERS_ENDPOINT = "/users";
 const TRANSCRIPTS_ENDPOINT = `${USERS_ENDPOINT}/:userId/transcripts`;
 
 const app = express();
+app.use(BodyParser.json());
 
-// users endpoints
-app.post(USERS_ENDPOINT, async (req, res, next) => {
-  const docRef = await usersRef.add({
-    username: req.body.username,
-  });
-  res.status(201).json({id: docRef.id});
+const userValidator = celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    email: Joi.string().email().required(),
+  }),
 });
 
-app.put(`${USERS_ENDPOINT}/:id`, async (req, res, next) => {
-  const docRef = await usersRef.add({
+const transcriptValidator = celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    filename: Joi.string().required(),
+    text: Joi.string().required(),
+  }),
+});
+
+// Create/update user
+app.put(`${USERS_ENDPOINT}/:id`, userValidator, async (req, res) => {
+  const userRef = usersRef.doc(req.params.id);
+  const userData = {
     id: req.params.id,
-    username: req.body.username,
-  });
-  res.json({id: docRef.id});
+    email: req.body.email,
+  };
+  await userRef.set(userData);
+  res.sendStatus(204);
 });
 
-app.get(`${USERS_ENDPOINT}/:id`, async (req, res, next) => {
-  const user = await usersRef.doc(req.params.id).data();
-  res.json(user);
+// Get user
+app.get(`${USERS_ENDPOINT}/:id`, async (req, res) => {
+  const doc = usersRef.doc(req.params.id).get();
+  if (!doc.exists) {
+    res.sendStatus(404);
+  } else {
+    res.json(doc.data());
+  }
 });
 
-app.delete(`${USERS_ENDPOINT}/:id`, async (req, res, next) => {
+// Delete user
+app.delete(`${USERS_ENDPOINT}/:id`, async (req, res) => {
   await usersRef.doc(req.params.id).delete();
-  res.sendStatus(200);
+  res.sendStatus(204);
 });
 
-// transcripts endpoints
-app.post(TRANSCRIPTS_ENDPOINT, async (req, res, next) => {
-  const docRef = await transcriptsRef.add({
+// Upload transcript for user
+app.post(TRANSCRIPTS_ENDPOINT, transcriptValidator, async (req, res) => {
+  const transcriptData = {
     userId: req.params.userId,
     filename: req.body.filename,
     dateUploaded: Timestamp.fromDate(new Date()),
     text: req.body.text,
+  };
+  const writeResult = await transcriptsRef.add(transcriptData);
+  res.status(201).json({
+    id: writeResult.id,
+    ...transcriptData,
   });
-  res.json({id: docRef.id});
 });
 
-app.get(TRANSCRIPTS_ENDPOINT, async (req, res, next) => {
+// Get all transcripts for user
+app.get(TRANSCRIPTS_ENDPOINT, async (req, res) => {
   const snapshot = await transcriptsRef.where("userId", "==", req.params.userId)
       .get();
-
   const data = [];
   snapshot.forEach((doc) => {
     data.push({id: doc.id, ...doc.data()});
@@ -76,10 +97,23 @@ app.get(TRANSCRIPTS_ENDPOINT, async (req, res, next) => {
   res.json(data);
 });
 
-app.get(`${TRANSCRIPTS_ENDPOINT}/:transcriptId`, async (req, res, next) => {
-  await transcriptsRef.doc(req.params.transcriptId).delete();
-  res.sendStatus(200);
+// Get transcript for user
+app.get(`${TRANSCRIPTS_ENDPOINT}/:transcriptId`, async (req, res) => {
+  const doc = await transcriptsRef.doc(req.params.transcriptId).get();
+  if (!doc.exists) {
+    res.sendStatus(404);
+  } else {
+    res.json({id: doc.id, ...doc.data()});
+  }
 });
+
+// Delete transcript for user
+app.delete(`${TRANSCRIPTS_ENDPOINT}/:transcriptId`, async (req, res) => {
+  await transcriptsRef.doc(req.params.transcriptId).delete();
+  res.sendStatus(204);
+});
+
+app.use(errors());
 
 // Expose Express API as a single Cloud Function:
 exports.api = onRequest(app);
