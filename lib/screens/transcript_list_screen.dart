@@ -30,7 +30,7 @@ class TranscriptListTile extends StatelessWidget {
                 .then((response) {
               transcriptModel.transcript = Transcript(
                   title: transcriptListItem.title, text: response.text);
-              context.go('/quiz');
+              context.go('/settings');
             });
           },
           title: Text(transcriptListItem.title),
