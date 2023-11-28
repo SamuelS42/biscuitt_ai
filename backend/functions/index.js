@@ -39,7 +39,7 @@ const userValidator = celebrate({
 
 const transcriptValidator = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    filename: Joi.string().required(),
+    title: Joi.string().required(),
     text: Joi.string().required(),
   }),
 });
@@ -75,7 +75,7 @@ app.delete(`${USERS_ENDPOINT}/:id`, async (req, res) => {
 app.post(TRANSCRIPTS_ENDPOINT, transcriptValidator, async (req, res) => {
   const transcriptData = {
     userId: req.params.userId,
-    filename: req.body.filename,
+    title: req.body.title,
     dateUploaded: Timestamp.fromDate(new Date()),
     text: req.body.text,
   };
