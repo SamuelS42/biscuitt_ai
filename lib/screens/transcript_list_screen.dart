@@ -12,7 +12,7 @@ import 'package:uuid/uuid.dart';
 import '../models/transcript_model.dart';
 
 class TranscriptListTile extends StatelessWidget {
-  final TranscriptListItem transcriptListItem;
+  final TranscriptResponse transcriptListItem;
 
   const TranscriptListTile({super.key, required this.transcriptListItem});
 
@@ -26,13 +26,10 @@ class TranscriptListTile extends StatelessWidget {
           onTap: () {
             TranscriptService transcriptService = TranscriptService();
             transcriptService
-                .getTranscript(transcriptListItem.id)
+                .getTranscript('testUser', transcriptListItem.id)
                 .then((response) {
               transcriptModel.transcript = Transcript(
-                  id: transcriptListItem.id,
-                  dateUploaded: transcriptListItem.dateUploaded,
-                  title: transcriptListItem.title,
-                  text: response.text);
+                  title: transcriptListItem.title, text: response.text);
               context.go('/settings');
             });
           },
@@ -57,9 +54,9 @@ class _TranscriptListScreenState extends State<TranscriptListScreen> {
   Widget build(BuildContext context) {
     var transcriptModel = context.watch<TranscriptModel>();
 
-    return FutureBuilder<List<TranscriptListItem>>(
-        future: transcriptService.getTranscripts(),
-        builder: (context, AsyncSnapshot<List<TranscriptListItem>> snapshot) {
+    return FutureBuilder<List<TranscriptResponse>>(
+        future: transcriptService.getTranscripts('testUser'),
+        builder: (context, AsyncSnapshot<List<TranscriptResponse>> snapshot) {
           if (snapshot.hasData &&
               snapshot.data != null &&
               snapshot.data!.isNotEmpty) {
@@ -92,14 +89,11 @@ class _TranscriptListScreenState extends State<TranscriptListScreen> {
                         file.readAsString().then((text) {
                           var uuid = const Uuid();
                           Transcript transcript = Transcript(
-                              id: uuid.v4(),
-                              dateUploaded: DateTime.timestamp(),
-                              title: file.uri.pathSegments.last,
-                              text: text);
+                              title: file.uri.pathSegments.last, text: text);
                           TranscriptService transcriptService =
                               TranscriptService();
                           transcriptService
-                              .addTranscript(transcript)
+                              .addTranscript('testUser', transcript)
                               .then((id) {
                             transcriptModel.transcript = transcript;
                             context.go('/quiz');
@@ -148,14 +142,12 @@ class _TranscriptListScreenState extends State<TranscriptListScreen> {
                               file.readAsString().then((text) {
                                 var uuid = const Uuid();
                                 Transcript transcript = Transcript(
-                                    id: uuid.v4(),
-                                    dateUploaded: DateTime.timestamp(),
                                     title: file.uri.pathSegments.last,
                                     text: text);
                                 TranscriptService transcriptService =
                                     TranscriptService();
                                 transcriptService
-                                    .addTranscript(transcript)
+                                    .addTranscript('testUser', transcript)
                                     .then((id) {
                                   transcriptModel.transcript = transcript;
                                   context.go('/quiz');
