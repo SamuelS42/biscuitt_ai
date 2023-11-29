@@ -21,6 +21,8 @@ Future main() async {
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final _shellNavigatorAuthKey =
+    GlobalKey<NavigatorState>(debugLabel: 'shellAuth');
 final _shellNavigatorPracticeKey =
     GlobalKey<NavigatorState>(debugLabel: 'shellPractice');
 final _shellNavigatorHistoryKey =
@@ -52,16 +54,6 @@ final _router = GoRouter(
                         pageBuilder: (context, state) => const NoTransitionPage(
                               child: QuizScreen(),
                             )),
-                    GoRoute(
-                        path: 'auth',
-                        pageBuilder: (context, state) => const NoTransitionPage(
-                              child: AuthScreen(),
-                            )),
-                    GoRoute(
-                        path: 'signup',
-                        pageBuilder: (context, state) => const NoTransitionPage(
-                              child: SignupScreen(),
-                            )),
                   ],
                 )
               ],
@@ -88,7 +80,25 @@ final _router = GoRouter(
                 )
               ],
             )
-          ])
+          ]),
+      StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) {
+            return Scaffold(body: navigationShell);
+          },
+          branches: [
+            StatefulShellBranch(navigatorKey: _shellNavigatorAuthKey, routes: [
+              GoRoute(
+                  path: '/auth',
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                        child: AuthScreen(),
+                      )),
+              GoRoute(
+                  path: '/signup',
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                        child: SignupScreen(),
+                      )),
+            ])
+          ]),
     ]);
 
 class BiscuittApp extends StatelessWidget {
