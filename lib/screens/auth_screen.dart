@@ -25,6 +25,9 @@ class _AuthScreen extends State<AuthScreen> {
       setState(() {
         loginErrText = "Logged in as ${credential.user}!";
       });
+      if (mounted) {
+        context.go('/');
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'INVALID_LOGIN_CREDENTIALS') {
         setState(() {
