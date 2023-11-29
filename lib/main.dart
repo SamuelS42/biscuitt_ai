@@ -1,14 +1,22 @@
+import 'package:biscuitt_ai/screens/auth_screen.dart';
 import 'package:biscuitt_ai/screens/history_screen.dart';
-import 'package:biscuitt_ai/screens/settings_screen.dart';
 import 'package:biscuitt_ai/screens/quiz_screen.dart';
+import 'package:biscuitt_ai/screens/settings_screen.dart';
+import 'package:biscuitt_ai/screens/signup_screen.dart';
 import 'package:biscuitt_ai/screens/transcript_list_screen.dart';
 import 'package:biscuitt_ai/widgets/scaffold_with_nested_navigation.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 
+import 'firebase_options.dart';
+
 Future main() async {
   await dotenv.load(fileName: '.env');
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const BiscuittApp());
 }
 
@@ -20,57 +28,68 @@ final _shellNavigatorHistoryKey =
 final _shellNavigatorSettingsKey =
     GlobalKey<NavigatorState>(debugLabel: 'shellSettings');
 
-final _router =
-    GoRouter(initialLocation: '/', navigatorKey: _rootNavigatorKey, routes: [
-  StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) {
-        return ScaffoldWithNestedNavigation(navigationShell: navigationShell);
-      },
-      branches: [
-        StatefulShellBranch(
-          navigatorKey: _shellNavigatorPracticeKey,
-          routes: [
-            GoRoute(
-              path: '/',
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: TranscriptListScreen(),
-              ),
+final _router = GoRouter(
+    initialLocation: '/auth',
+    navigatorKey: _rootNavigatorKey,
+    routes: [
+      StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) {
+            return ScaffoldWithNestedNavigation(
+                navigationShell: navigationShell);
+          },
+          branches: [
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorPracticeKey,
               routes: [
                 GoRoute(
-                    path: 'quiz',
-                    pageBuilder: (context, state) => const NoTransitionPage(
-                          child: QuizScreen(),
-                        )),
+                  path: '/',
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                    child: TranscriptListScreen(),
+                  ),
+                  routes: [
+                    GoRoute(
+                        path: 'quiz',
+                        pageBuilder: (context, state) => const NoTransitionPage(
+                              child: QuizScreen(),
+                            )),
+                    GoRoute(
+                        path: 'auth',
+                        pageBuilder: (context, state) => const NoTransitionPage(
+                              child: AuthScreen(),
+                            )),
+                    GoRoute(
+                        path: 'signup',
+                        pageBuilder: (context, state) => const NoTransitionPage(
+                              child: SignupScreen(),
+                            )),
+                  ],
+                )
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorHistoryKey,
+              routes: [
+                GoRoute(
+                  path: '/history',
+                  pageBuilder: (context, state) =>
+                      const NoTransitionPage(child: HistoryScreen()),
+                  routes: const [],
+                )
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorSettingsKey,
+              routes: [
+                GoRoute(
+                  path: '/settings',
+                  pageBuilder: (context, state) =>
+                      const NoTransitionPage(child: SettingsScreen()),
+                  routes: [],
+                )
               ],
             )
-          ],
-        ),
-        StatefulShellBranch(
-          navigatorKey: _shellNavigatorHistoryKey,
-          routes: [
-            GoRoute(
-              path: '/history',
-              pageBuilder: (context, state) =>
-                  const NoTransitionPage(child: HistoryScreen()),
-              routes: const [],
-            )
-          ],
-        ),
-        StatefulShellBranch(
-          navigatorKey: _shellNavigatorSettingsKey,
-          routes: [
-            GoRoute(
-              path: '/settings',
-              pageBuilder: (context, state) =>
-                  const NoTransitionPage(child: SettingsScreen()),
-              routes: [],
-            )
-          ],
-        )
-        
-      ])
-      
-]);
+          ])
+    ]);
 
 class BiscuittApp extends StatelessWidget {
   const BiscuittApp({super.key});
