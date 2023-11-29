@@ -61,7 +61,7 @@ class _FileUploadScreenState extends State<FileUploadScreen> {
                 onPressed: () =>
                     _pickAndUploadFile(fileModel).then((String? filePath) {
                   if (filePath != null) {
-                    context.go('/settings');
+                    context.go('/quiz');
                   }
                 }),
                 child: const Text('Upload'),

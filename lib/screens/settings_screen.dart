@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 enum QuestionType { MultipleChoice, TrueFalse }
-
 var SetQuestionType = 0;
 
 class SettingsScreen extends StatefulWidget {
@@ -20,7 +18,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Set Question Type'),
+          title: Text('Set Question Type'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -31,9 +29,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: (QuestionType? value) {
                   setState(() {
                     selectedQuestionType = value;
-                    SetQuestionType = 0;
                   });
-                  Navigator.of(context).pop();
+                  SetQuestionType = 0;
+                  Navigator.pop(context); // Close the dialog after selection
                 },
               ),
               RadioListTile<QuestionType>(
@@ -43,9 +41,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: (QuestionType? value) {
                   setState(() {
                     selectedQuestionType = value;
-                    SetQuestionType = 1;
                   });
-                  Navigator.of(context).pop();
+                  SetQuestionType = 1;
+                  Navigator.pop(context); // Close the dialog after selection
                 },
               ),
             ],
@@ -59,29 +57,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text('Settings'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const Text(
-                'Select your preferred question type before continuing!'),
-            ListTile(
-              title: const Text('Set Question Type'),
-              subtitle: Text(selectedQuestionType == QuestionType.MultipleChoice
-                  ? 'Multiple Choice'
-                  : 'True or False'),
-              onTap: _showQuestionTypeDialog,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => context.go('/quiz'),
-              child: const Text('Start Quiz!'),
-            ),
-          ],
-        ),
+      body: ListView(
+        children: <Widget>[
+          ListTile(
+            title: Text('Set Question Type'),
+            subtitle: Text(selectedQuestionType == QuestionType.MultipleChoice
+                ? 'Multiple Choice'
+                : 'True or False'),
+            onTap: () {
+              _showQuestionTypeDialog();
+            },
+          ),
+        ],
       ),
     );
   }

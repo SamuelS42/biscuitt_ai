@@ -82,12 +82,15 @@ class _QuizScreenState extends State<QuizScreen> {
               correctIndex = "abcd".indexOf(lines[i][16]);
             } else {
               String answerText = lines[i].substring(3).trim();
-              answers.add(Answer(text: answerText, isCorrect: false));
+              answers.add(Answer(
+                  text: answerText,
+                  isCorrect: false)); // Temporarily set isCorrect to false
             }
           }
 
           if (correctIndex != -1 && correctIndex < answers.length) {
-            answers[correctIndex].isCorrect = true;
+            answers[correctIndex].isCorrect =
+                true; // Set the correct answer after parsing all options
           }
 
           questions.add(Question(text: questionText, answers: answers));
@@ -95,37 +98,29 @@ class _QuizScreenState extends State<QuizScreen> {
       }
     }
     if (SetQuestionType == 1) {
-      for (int i = 0; i < lines.length; i++) {
-        if (lines[i].contains(RegExp(r'^\d+\:'))) {
-          String questionText =
-              lines[i].substring(lines[i].indexOf(':') + 1).trim();
-          List<Answer> answers = [
-            Answer(text: 'True', isCorrect: false),
-            Answer(text: 'False', isCorrect: false)
-          ];
-          int correctIndex = -1;
+      for (int i = 0; i < lines.length - 2; i++) {
+        if (lines[i].contains('?')) {
+          String q = lines[i];
+          String a = (lines[i + 3].split(':'))[1].trim();
+          List<Answer> answers = [];
+        
+          answers.add(Answer(
+          text: a,
+          isCorrect: true));
 
-          while (i + 1 < lines.length &&
-              (lines[i + 1].startsWith(' a)') ||
-                  lines[i + 1].startsWith(' b)') ||
-                  lines[i + 1].startsWith("CORRECT:"))) {
-            i++;
-
-            if (lines[i].startsWith("CORRECT:")) {
-              correctIndex = lines[i].endsWith('a') ? 0 : 1;
-            }
+          if (a == "True") {
+            answers.add(Answer(
+            text: "False",
+            isCorrect: false));
+          } else {
+            answers.add(Answer(
+            text: "True",
+            isCorrect: false));
           }
-
-          if (correctIndex != -1) {
-            answers[correctIndex].isCorrect = true;
+          questions.add(Question(text: q, answers: answers));
           }
-
-          questions.add(Question(text: questionText, answers: answers));
-        }
       }
     }
-    // print("in parse questions");
-    // print(questions);
     return questions;
   }
 
@@ -133,15 +128,12 @@ class _QuizScreenState extends State<QuizScreen> {
     try {
       String prompt = "-";
       if (SetQuestionType == 0) {
-        prompt =
-            "Following is a lecture transcript. \n \n Given this transcript, generate 5 multiple-choice questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\na) Option 1a b)\nOption 1b\nc) Option 1c\nd) Option 1d\nCORRECT: Option a\n\n Transcript: $transcript";
+        prompt = "Following is a lecture transcript. \n \n Given this transcript, generate 5 multiple-choice questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\na) Option 1a b)\nOption 1b\nc) Option 1c\nd) Option 1d\nCORRECT: Option a\n\n Transcript: $transcript";
       }
       if (SetQuestionType == 1) {
-        print('true false');
-        prompt =
-            "Following is a lecture transcript. \n \n Given this transcript, generate 5 True or False questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\n a) True \n b) False \nCORRECT: a\n\n Transcript: $transcript";
+        prompt = "Following is a lecture transcript. \n \n Given this transcript, generate 5 True False questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\n True \n False \nCORRECT: answere\n\n Transcript: $transcript";
       }
-
+          
       String response = await _service.fetchResponse(
         prompt,
         maxTokens: 2000,
