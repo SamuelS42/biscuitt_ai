@@ -6,9 +6,11 @@ import 'package:biscuitt_ai/widgets/scaffold_with_nested_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 Future main() async {
   await dotenv.load(fileName: '.env');
+  MobileAds.instance.initialize();
   runApp(const BiscuittApp());
 }
 
