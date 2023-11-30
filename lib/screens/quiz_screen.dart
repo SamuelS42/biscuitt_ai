@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-//ca-app-pub-3940256099942544/6300978111
-import 'package:biscuitt_ai/models/question.dart';
-import 'package:biscuitt_ai/services/openai_service.dart';
+import '../models/question.dart';
+import '../services/openai_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:biscuitt_ai/screens/settings_screen.dart';
+import 'settings_screen.dart';
 
 import '../models/score_model.dart';
 import '../models/transcript.dart';
@@ -101,7 +100,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   List<Question> parseQuestions(String responseText) {
-    var lines = responseText.split("\n");
+    var lines = responseText.split('\n');
     List<Question> questions = [];
     if (SetQuestionType == 0) {
       for (int i = 0; i < lines.length; i++) {
@@ -113,11 +112,11 @@ class _QuizScreenState extends State<QuizScreen> {
 
           while (i + 1 < lines.length &&
               (lines[i + 1].contains(RegExp(r'^[a-d]\)')) ||
-                  lines[i + 1].startsWith("CORRECT: Option "))) {
+                  lines[i + 1].startsWith('CORRECT: Option '))) {
             i++;
 
-            if (lines[i].startsWith("CORRECT: Option ")) {
-              correctIndex = "abcd".indexOf(lines[i][16]);
+            if (lines[i].startsWith('CORRECT: Option ')) {
+              correctIndex = 'abcd'.indexOf(lines[i][16]);
             } else {
               String answerText = lines[i].substring(3).trim();
               answers.add(Answer(
@@ -146,13 +145,13 @@ class _QuizScreenState extends State<QuizScreen> {
           text: a,
           isCorrect: true));
 
-          if (a == "True") {
+          if (a == 'True') {
             answers.add(Answer(
-            text: "False",
+            text: 'False',
             isCorrect: false));
           } else {
             answers.add(Answer(
-            text: "True",
+            text: 'True',
             isCorrect: false));
           }
           questions.add(Question(text: q, answers: answers));
@@ -164,12 +163,12 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _getResponse(String transcript) async {
     try {
-      String prompt = "-";
+      String prompt = '-';
       if (SetQuestionType == 0) {
-        prompt = "Following is a lecture transcript. \n \n Given this transcript, generate 5 multiple-choice questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\na) Option 1a b)\nOption 1b\nc) Option 1c\nd) Option 1d\nCORRECT: Option a\n\n Transcript: $transcript";
+        prompt = 'Following is a lecture transcript. \n \n Given this transcript, generate 5 multiple-choice questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\na) Option 1a b)\nOption 1b\nc) Option 1c\nd) Option 1d\nCORRECT: Option a\n\n Transcript: $transcript';
       }
       if (SetQuestionType == 1) {
-        prompt = "Following is a lecture transcript. \n \n Given this transcript, generate 5 True False questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\n True \n False \nCORRECT: answere\n\n Transcript: $transcript";
+        prompt = 'Following is a lecture transcript. \n \n Given this transcript, generate 5 True False questions and their correct answers. \n\n Answer with ONLY the questions, their correct answers, and their choices. For each question, write your response in the following format:\n\n1: Question text.\n True \n False \nCORRECT: answere\n\n Transcript: $transcript';
       }
           
       String response = await _service.fetchResponse(
@@ -307,7 +306,7 @@ class _AnswerItemState extends State<AnswerItem> {
           }
 
           debugPrint(
-              "ElevatedButton pressed, text: ${widget.answer.text}, isCorrect: ${widget.answer.isCorrect}");
+              'ElevatedButton pressed, text: ${widget.answer.text}, isCorrect: ${widget.answer.isCorrect}');
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: !widget.enabled

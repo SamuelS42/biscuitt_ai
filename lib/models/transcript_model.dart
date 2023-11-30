@@ -1,9 +1,8 @@
-import 'package:biscuitt_ai/models/transcript.dart';
+import 'transcript.dart';
 import 'package:flutter/foundation.dart';
 
 class TranscriptModel extends ChangeNotifier {
-  Transcript _transcript = Transcript(
-      id: '', dateUploaded: DateTime.timestamp(), title: '', text: '');
+  Transcript _transcript = Transcript(title: '', text: '');
 
   set transcript(Transcript transcript) {
     _transcript = transcript;

@@ -1,4 +1,4 @@
-import 'package:biscuitt_ai/models/file_model.dart';
+import '../models/file_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

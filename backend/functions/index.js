@@ -12,7 +12,7 @@ const BodyParser = require("body-parser");
 const {celebrate, Joi, errors, Segments} = require("celebrate");
 
 // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
-const {logger} = require("firebase-functions");
+// const {logger} = require("firebase-functions");
 const {onRequest} = require("firebase-functions/v2/https");
 
 // The Firebase Admin SDK to access Firestore.
@@ -39,7 +39,7 @@ const userValidator = celebrate({
 
 const transcriptValidator = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    filename: Joi.string().required(),
+    title: Joi.string().required(),
     text: Joi.string().required(),
   }),
 });
@@ -75,7 +75,7 @@ app.delete(`${USERS_ENDPOINT}/:id`, async (req, res) => {
 app.post(TRANSCRIPTS_ENDPOINT, transcriptValidator, async (req, res) => {
   const transcriptData = {
     userId: req.params.userId,
-    filename: req.body.filename,
+    title: req.body.title,
     dateUploaded: Timestamp.fromDate(new Date()),
     text: req.body.text,
   };

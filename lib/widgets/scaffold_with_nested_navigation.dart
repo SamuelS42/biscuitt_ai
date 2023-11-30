@@ -42,15 +42,15 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
           NavigationDestination(
               icon: Icon(Icons.create_outlined),
               selectedIcon: Icon(Icons.create),
-              label: "Practice"),
+              label: 'Practice'),
           NavigationDestination(
               icon: Icon(Icons.view_list),
               selectedIcon: Icon(Icons.view_list_outlined),
-              label: "History"),
+              label: 'History'),
            NavigationDestination(
               icon: Icon(Icons.settings),
               selectedIcon: Icon(Icons.settings_outlined),
-              label: "Settings"),
+              label: 'Settings'),
         ],
         onDestinationSelected: _goBranch,
       ),

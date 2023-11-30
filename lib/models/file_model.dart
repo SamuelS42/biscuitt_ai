@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart';
 
 class FileModel extends ChangeNotifier {
-  late String _uploadedFilePath = '';
+  String? _uploadedFilePath;
 
-  set uploadedFilePath(String uploadedFilePath) {
+  set uploadedFilePath(String? uploadedFilePath) {
     _uploadedFilePath = uploadedFilePath;
     notifyListeners();
   }
 
-  String get uploadedFilePath {
+  String? get uploadedFilePath {
     return _uploadedFilePath;
   }
 }
