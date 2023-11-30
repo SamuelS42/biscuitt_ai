@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import '../models/question.dart';
 import '../services/openai_service.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'settings_screen.dart';
 import '../models/score_model.dart';
 import '../models/transcript.dart';
 import '../models/transcript_model.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -36,7 +36,44 @@ class _QuizScreenState extends State<QuizScreen> {
   void initState() {
     super.initState();
     generateQuestions();
+    _createBannerAd();
   }
+
+  BannerAd? _banner;
+
+  void _createBannerAd() {
+    _banner = BannerAd(
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111', // Replace with your ad unit ID
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(),
+    )..load();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        BannerAdWidget(ad: _banner), // Display banner ad at the top
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                const ScoreChips(),
+                const SizedBox(height: 32),
+                _questions.isNotEmpty
+                    ? QuestionView(
+                        question: _questions[_questionIndex],
+                        incrementQuestionIndex: incrementQuestionIndex)
+                    : const CircularProgressIndicator()
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
 
   void generateQuestions() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -156,24 +193,6 @@ class _QuizScreenState extends State<QuizScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const ScoreChips(),
-              const SizedBox(height: 32),
-              _questions.isNotEmpty
-                  ? QuestionView(
-                      question: _questions[_questionIndex],
-                      incrementQuestionIndex: incrementQuestionIndex)
-                  : const CircularProgressIndicator()
-            ],
-          ),
-        ));
-  }
 }
 
 class ScoreChips extends StatelessWidget {
@@ -349,3 +368,23 @@ class _QuestionView extends State<QuestionView> {
     );
   }
 }
+
+class BannerAdWidget extends StatelessWidget {
+  final BannerAd? ad;
+
+  const BannerAdWidget({Key? key, required this.ad}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (ad == null) {
+      return Container(); // Return an empty container if the ad is null
+    }
+
+    return Container(
+      width: ad?.size.width.toDouble() ?? 0.0, // Use null-aware operator
+      height: ad?.size.height.toDouble() ?? 0.0, // Use null-aware operator
+      child: AdWidget(ad: ad!),
+    );
+  }
+}
+

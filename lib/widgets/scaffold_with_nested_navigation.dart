@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../models/score_model.dart';
 import '../models/transcript_model.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class ScaffoldWithNestedNavigation extends StatelessWidget {
-  const ScaffoldWithNestedNavigation({
+  ScaffoldWithNestedNavigation({
     Key? key,
     required this.navigationShell,
   }) : super(
