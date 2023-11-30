@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:biscuitt_ai/models/transcript.dart';
-import 'package:biscuitt_ai/services/file_picker_service.dart';
-import 'package:biscuitt_ai/services/transcript_service.dart';
+import '../models/transcript.dart';
+import '../services/file_picker_service.dart';
+import '../services/transcript_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +26,7 @@ class TranscriptListTile extends StatelessWidget {
           onTap: () {
             TranscriptService transcriptService = TranscriptService();
             transcriptService
-                .getTranscript('testUser', transcriptListItem.id)
+                .getTranscript(transcriptListItem.id)
                 .then((response) {
               transcriptModel.transcript = Transcript(
                   title: transcriptListItem.title, text: response.text);
@@ -55,7 +55,7 @@ class _TranscriptListScreenState extends State<TranscriptListScreen> {
     var transcriptModel = context.watch<TranscriptModel>();
 
     return FutureBuilder<List<TranscriptResponse>>(
-        future: transcriptService.getTranscripts('testUser'),
+        future: transcriptService.getTranscripts(),
         builder: (context, AsyncSnapshot<List<TranscriptResponse>> snapshot) {
           if (snapshot.hasData &&
               snapshot.data != null &&
@@ -93,7 +93,7 @@ class _TranscriptListScreenState extends State<TranscriptListScreen> {
                           TranscriptService transcriptService =
                               TranscriptService();
                           transcriptService
-                              .addTranscript('testUser', transcript)
+                              .addTranscript(transcript)
                               .then((id) {
                             transcriptModel.transcript = transcript;
                             context.go('/quiz');
@@ -147,7 +147,7 @@ class _TranscriptListScreenState extends State<TranscriptListScreen> {
                                 TranscriptService transcriptService =
                                     TranscriptService();
                                 transcriptService
-                                    .addTranscript('testUser', transcript)
+                                    .addTranscript(transcript)
                                     .then((id) {
                                   transcriptModel.transcript = transcript;
                                   context.go('/quiz');

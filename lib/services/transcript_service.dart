@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -9,9 +10,18 @@ import '../models/transcript.dart';
 final apiUrl = dotenv.env['API_URL'];
 
 class TranscriptService {
-  Future<List<TranscriptResponse>> getTranscripts(String userId) async {
+  String getUserId() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      return currentUser.uid;
+    } else {
+      throw Exception('Could not get user id because user is not signed in.');
+    }
+  }
+
+  Future<List<TranscriptResponse>> getTranscripts() async {
     final response =
-        await http.get(Uri.parse('$apiUrl/api/users/$userId/transcripts'));
+        await http.get(Uri.parse('$apiUrl/users/${getUserId()}/transcripts'));
 
     if (response.statusCode == 200) {
       return List<TranscriptResponse>.from(
@@ -21,10 +31,9 @@ class TranscriptService {
     }
   }
 
-  Future<TranscriptResponse> getTranscript(
-      String userId, String transcriptId) async {
-    final response = await http
-        .get(Uri.parse('$apiUrl/api/users/$userId/transcripts/$transcriptId'));
+  Future<TranscriptResponse> getTranscript(String transcriptId) async {
+    final response = await http.get(
+        Uri.parse('$apiUrl/users/${getUserId()}/transcripts/$transcriptId'));
 
     if (response.statusCode == 200) {
       return TranscriptResponse.fromJson(
@@ -34,10 +43,9 @@ class TranscriptService {
     }
   }
 
-  Future<TranscriptResponse> addTranscript(
-      String userId, Transcript transcript) async {
+  Future<TranscriptResponse> addTranscript(Transcript transcript) async {
     final response =
-        await http.post(Uri.parse('$apiUrl/api/users/$userId/transcripts'),
+        await http.post(Uri.parse('$apiUrl/users/${getUserId()}/transcripts'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },

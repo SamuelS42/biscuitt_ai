@@ -1,4 +1,4 @@
-import 'package:biscuitt_ai/models/transcript.dart';
+import 'transcript.dart';
 import 'package:flutter/foundation.dart';
 
 class TranscriptModel extends ChangeNotifier {

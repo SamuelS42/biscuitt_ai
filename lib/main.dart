@@ -1,10 +1,10 @@
-import 'package:biscuitt_ai/screens/auth_screen.dart';
-import 'package:biscuitt_ai/screens/history_screen.dart';
-import 'package:biscuitt_ai/screens/quiz_screen.dart';
-import 'package:biscuitt_ai/screens/settings_screen.dart';
-import 'package:biscuitt_ai/screens/signup_screen.dart';
-import 'package:biscuitt_ai/screens/transcript_list_screen.dart';
-import 'package:biscuitt_ai/widgets/scaffold_with_nested_navigation.dart';
+import 'screens/auth_screen.dart';
+import 'screens/history_screen.dart';
+import 'screens/quiz_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/signup_screen.dart';
+import 'screens/transcript_list_screen.dart';
+import 'widgets/scaffold_with_nested_navigation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -76,7 +76,7 @@ final _router = GoRouter(
                   path: '/settings',
                   pageBuilder: (context, state) =>
                       const NoTransitionPage(child: SettingsScreen()),
-                  routes: [],
+                  routes: const [],
                 )
               ],
             )

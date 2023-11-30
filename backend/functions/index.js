@@ -12,7 +12,7 @@ const BodyParser = require("body-parser");
 const {celebrate, Joi, errors, Segments} = require("celebrate");
 
 // The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
-const {logger} = require("firebase-functions");
+// const {logger} = require("firebase-functions");
 const {onRequest} = require("firebase-functions/v2/https");
 
 // The Firebase Admin SDK to access Firestore.

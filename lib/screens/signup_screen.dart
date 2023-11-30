@@ -12,7 +12,7 @@ class _SignupScreen extends State<SignupScreen> {
   final TextEditingController userController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   final TextEditingController passConfirmController = TextEditingController();
-  String loginErrText = "";
+  String loginErrText = '';
 
   void signup() async {
     String emailAddress = userController.value.text;
@@ -21,7 +21,7 @@ class _SignupScreen extends State<SignupScreen> {
 
     if (password != passwordConfirmation) {
       setState(() {
-        loginErrText = "Passwords must match!";
+        loginErrText = 'Passwords must match!';
       });
     }
 
@@ -34,15 +34,15 @@ class _SignupScreen extends State<SignupScreen> {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         setState(() {
-          loginErrText = "Password is too weak.";
+          loginErrText = 'Password is too weak.';
         });
       } else if (e.code == 'email-already-in-use') {
         setState(() {
-          loginErrText = "Account already exists.";
+          loginErrText = 'Account already exists.';
         });
       } else {
         setState(() {
-          loginErrText = "An unknown error occurred: ${e.code}";
+          loginErrText = 'An unknown error occurred: ${e.code}';
         });
       }
     }
@@ -66,25 +66,25 @@ class _SignupScreen extends State<SignupScreen> {
     Widget userField = TextField(
       controller: userController,
       decoration: const InputDecoration(
-          border: OutlineInputBorder(), labelText: "Email"),
+          border: OutlineInputBorder(), labelText: 'Email'),
     );
 
     Widget passField = TextField(
       controller: passController,
       obscureText: true,
       decoration: const InputDecoration(
-          border: OutlineInputBorder(), labelText: "Password"),
+          border: OutlineInputBorder(), labelText: 'Password'),
     );
 
     Widget passConfirmField = TextField(
       controller: passConfirmController,
       obscureText: true,
       decoration: const InputDecoration(
-          border: OutlineInputBorder(), labelText: "Confirm Password"),
+          border: OutlineInputBorder(), labelText: 'Confirm Password'),
     );
 
     Widget submitButton =
-        FilledButton(onPressed: () => signup(), child: const Text("Sign Up"));
+        FilledButton(onPressed: () => signup(), child: const Text('Sign Up'));
 
     EdgeInsets pad = const EdgeInsets.all(10);
     return Padding(
