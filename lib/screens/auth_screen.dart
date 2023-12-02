@@ -2,6 +2,7 @@ import 'signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -11,43 +12,54 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreen extends State<AuthScreen> {
+  final CollectionReference<Map<String, dynamic>> _loginTrackingCollection =
+      FirebaseFirestore.instance.collection('logins');
   final TextEditingController userController = TextEditingController();
   final TextEditingController passController = TextEditingController();
   String loginErrText = '';
 
-  void verifyLogin() async {
-    String emailAddress = userController.value.text;
-    String password = passController.value.text;
+void verifyLogin() async {
+  String emailAddress = userController.value.text;
+  String password = passController.value.text;
 
-    try {
-      final credential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: emailAddress, password: password);
+  try {
+    final credential = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: emailAddress, password: password);
+    setState(() {
+      loginErrText = 'Logged in as ${credential.user}!';
+    });
+    String username = emailAddress.split('@')[0];
+
+    // Add a document to the "logins" collection
+    await _loginTrackingCollection.add({
+      'username': username,
+      'time': FieldValue.serverTimestamp(),
+    });
+
+    if (mounted) {
+      context.go('/');
+    }
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'INVALID_LOGIN_CREDENTIALS') {
       setState(() {
-        loginErrText = 'Logged in as ${credential.user}!';
+        loginErrText = 'Invalid Login.';
       });
-      if (mounted) {
-        context.go('/');
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'INVALID_LOGIN_CREDENTIALS') {
-        setState(() {
-          loginErrText = 'Invalid Login.';
-        });
-      } else if (e.code == 'wrong-password') {
-        setState(() {
-          loginErrText = 'Incorrect password.';
-        });
-      } else if (e.code == 'invalid-email') {
-        setState(() {
-          loginErrText = 'Invalid email.';
-        });
-      } else {
-        setState(() {
-          loginErrText = 'An unknown error occurred: ${e.code}';
-        });
-      }
+    } else if (e.code == 'wrong-password') {
+      setState(() {
+        loginErrText = 'Incorrect password.';
+      });
+    } else if (e.code == 'invalid-email') {
+      setState(() {
+        loginErrText = 'Invalid email.';
+      });
+    } else {
+      setState(() {
+        loginErrText = 'An unknown error occurred: ${e.code}';
+      });
     }
   }
+}
+
 
   @override
   void initState() {
