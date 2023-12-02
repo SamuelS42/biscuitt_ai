@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  path_provider: ^2.0.14
   flutter:
     sdk: flutter
 
@@ -50,8 +51,9 @@ dependencies:
   go_router: ^12.1.0
   timeago: ^3.6.0
   uuid: ^4.2.1
-  http: ^1.1.2
+  http: ^1.1.0
   cloud_firestore: ^4.13.3
+  firebase_storage: ^11.5.3
   firebase_core: ^2.24.0
   firebase_auth: ^4.15.0
   google_mobile_ads: ^3.1.0
